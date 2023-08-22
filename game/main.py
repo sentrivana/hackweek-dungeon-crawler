@@ -5,17 +5,11 @@ import sys
 
 import pygame
 
-from game.consts import (
-    GAME_TITLE,
-    TILE_COLS,
-    TILE_ROWS,
-    TILE_SIZE_PIXELS,
-    WINDOW_HEIGHT,
-    WINDOW_WIDTH,
-)
+from game.consts import GAME_TITLE, WINDOW_HEIGHT, WINDOW_WIDTH
 from game.controls import MOVEMENT_CONTROLS
-from game.events import EVENT_GENERATE_OVERLAY
+from game.events import CustomEvent
 from game.level.level import Level
+from game.overlay import HUDOverlay, TextOverlay, TorchlightOverlay
 
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -25,7 +19,9 @@ logger = logging.getLogger(__name__)
 class State(enum.Enum):
     RUNNING = 0
     OVERLAY = 1
-    STOPPED = 2
+    MINIGAME = 2
+    STOPPED = 3
+    GAME_OVER = 4
 
 
 def run():
@@ -37,57 +33,93 @@ def run():
     pygame.display.set_caption(GAME_TITLE)
     clock = pygame.time.Clock()
     state = State.RUNNING
-    darkness_overlay = get_darkness_overlay()
+    torchlight_overlay = TorchlightOverlay()
+    text_overlay = TextOverlay()
+    minigame = None
 
     level = Level("levels/001.map")
+    hud_overlay = HUDOverlay(level)
 
-    pygame.time.set_timer(pygame.event.Event(EVENT_GENERATE_OVERLAY), 800)
+    pygame.time.set_timer(
+        pygame.event.Event(CustomEvent.REGENERATE_TORCHLIGHT.value), 800
+    )
+
+    # XXX put this somewhere
+    from textwrap import dedent
+
+    text = dedent(
+        """\
+        Another day,
+        another bug squashing mission.
+
+        Never seen this codebase before.
+
+        Hope there's at least some
+        documentation.
+
+        Oh hey I already see some
+        comments!
+    """
+    )
+    pygame.event.post(pygame.event.Event(CustomEvent.SHOW_TEXT.value, text=text))
 
     while state != State.STOPPED:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 state = state.STOPPED
+            elif event.type == CustomEvent.INITIALIZE_MINIGAME.value:
+                minigame = event.minigame(event.enemy)
+            elif event.type == CustomEvent.ENEMY_DEFEATED.value:
+                level.remove_enemy(event.row, event.col)
+                minigame = None
+                state = State.RUNNING
+            elif event.type == CustomEvent.DAMAGE_RECEIVED.value:
+                level.damage_received()
+            elif event.type == CustomEvent.GAME_OVER.value:
+                state = State.GAME_OVER
+                text_overlay.set_text("GAME OVER\n\n" + event.text)
 
             if state == State.RUNNING:
                 if event.type == pygame.KEYDOWN:
                     if event.key in MOVEMENT_CONTROLS:
                         level.handle_movement(MOVEMENT_CONTROLS[event.key])
-                elif event.type == EVENT_GENERATE_OVERLAY:
-                    darkness_overlay = get_darkness_overlay()
+
+                elif event.type == CustomEvent.REGENERATE_TORCHLIGHT.value:
+                    torchlight_overlay.generate()
+
+                elif event.type == CustomEvent.SHOW_TEXT.value:
+                    state = State.OVERLAY
+                    text_overlay.set_text(event.text, getattr(event, "color", None))
 
             elif state == State.OVERLAY:
-                pass
+                if event.type == pygame.KEYDOWN:
+                    state = State.RUNNING
+                    text_overlay.dismiss()
+
+                    if minigame is not None and not minigame.started:
+                        state = State.MINIGAME
+                        minigame.start()
+
+            elif state == State.MINIGAME:
+                if event.type == pygame.KEYDOWN:
+                    minigame.input()
 
         screen.fill((0, 0, 0))
 
         level.render(screen)
 
-        screen.blits(darkness_overlay)
+        torchlight_overlay.render(screen)
+
+        if state in (State.OVERLAY, State.GAME_OVER):
+            text_overlay.render(screen)
+
+        elif state == State.MINIGAME:
+            minigame.render(screen, dt)
+
+        hud_overlay.render(screen)
 
         pygame.display.flip()
 
-        clock.tick(60)
+        dt = clock.tick(60) / 1000
 
     pygame.quit()
-
-
-def get_darkness_overlay():
-    # XXX make this better and move it someplace else
-    overlays = []
-
-    max_dist = TILE_ROWS // 2
-    for r in range(TILE_ROWS):
-        for c in range(TILE_COLS):
-            dist_to_center = max(abs(r - TILE_ROWS // 2), abs(c - TILE_COLS // 2))
-            surface = pygame.Surface((TILE_SIZE_PIXELS, TILE_SIZE_PIXELS))
-            degree = 255 // max_dist
-            # XXX
-            surface.set_alpha(degree * dist_to_center + random.randint(-10, 10))
-            overlays.append(
-                (
-                    surface,
-                    (c * TILE_SIZE_PIXELS, r * TILE_SIZE_PIXELS),
-                )
-            )
-
-    return overlays

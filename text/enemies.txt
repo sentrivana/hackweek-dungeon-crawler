@@ -1,0 +1,19 @@
+Hey there programmer! What's up?
+What do you mean, am I a bug?
+That's kinda rude.
+
+Oh. You found me.
+Listen, it's not what you think --
+I'm here to make the program more fun!
+Will it crash or not this time?
+No way to tell! So exciting!
+What's life without a bit of adventure?
+
+I'm not a bug.
+Just a really complicated feature.
+
+I've been here since the very beginning!
+I'm obviously a feature!
+I'm also part of the public API lol
+There's at least 3 people explicitly
+    depending on me by now.

@@ -1,10 +1,14 @@
 import logging
+import random
 
-from game.consts import TILE_COLS, TILE_ROWS
+from game.assets import ASSETS
+from game.consts import MAX_HEALTH, TILE_COLS, TILE_ROWS
 from game.controls import Direction
+from game.events import CustomEvent
 from game.level.entity import Entity
 from game.level.tile import Tile
 from game.level.types import EntityType, TileType
+from game.utils import post_event
 
 logger = logging.getLogger(__name__)
 
@@ -12,8 +16,9 @@ logger = logging.getLogger(__name__)
 class Level:
     def __init__(self, filename):
         self.map = []
-        self.entities = []
+        self.entities = {}
         self.player = None
+        self.health = MAX_HEALTH
 
         self._load_map(filename)
 
@@ -39,7 +44,7 @@ class Level:
             for col in range(self.top_left[1], self.top_left[1] + TILE_COLS):
                 self.tile(row, col).render(screen, self.top_left)
 
-        for entity in self.entities:
+        for (row, col), entity in self.entities.items():
             if self._tile_visible(row, col):
                 entity.render(screen, self.top_left)
 
@@ -47,9 +52,24 @@ class Level:
 
     def handle_movement(self, movement):
         target = self._target_tile(self.player, movement)
-        if target is not None and self._can_move_to(target):
+        target_entity = self.entities.get((target.row, target.col))
+        if target_entity:
+            target_entity.interact()
+
+        elif self._can_move_to(target):
             self.player.row = target.row
             self.player.col = target.col
+
+    def remove_enemy(self, row, col):
+        del self.entities[(row, col)]
+        logger.debug("Entity at %d %d deleted", row, col)
+
+    def damage_received(self):
+        self.health -= 1
+        if self.health <= 0:
+            post_event(
+                CustomEvent.GAME_OVER, text=random.choice(ASSETS.game_over_blurps)
+            )
 
     def dist_to_player(self, tile):
         return max(abs(tile.row - self.player.row), abs(tile.col - self.player.col))
@@ -98,13 +118,13 @@ class Level:
                         self.map[-1].append(Tile(row, col, TileType(int(code))))
 
                 else:
+                    actual_row = row - row_offset
+
                     for col, code in enumerate(line.strip()):
                         entity_type = EntityType(int(code))
-                        if entity_type == EntityType.EMPTY:
-                            continue
-                        elif entity_type == EntityType.PLAYER:
-                            self.player = Entity(row - row_offset, col, entity_type)
-                        else:
-                            self.entities.append(
-                                Entity(row - row_offset, col, entity_type)
+                        if entity_type == EntityType.PLAYER:
+                            self.player = Entity(actual_row, col, entity_type)
+                        elif entity_type in (EntityType.ENEMY, EntityType.SIGN):
+                            self.entities[(actual_row, col)] = Entity(
+                                actual_row, col, entity_type
                             )

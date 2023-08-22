@@ -1,3 +1,4 @@
+import enum
 import logging
 import random
 import sys
@@ -21,6 +22,12 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
+class State(enum.Enum):
+    RUNNING = 0
+    OVERLAY = 1
+    STOPPED = 2
+
+
 def run():
     pygame.init()
 
@@ -29,24 +36,27 @@ def run():
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     pygame.display.set_caption(GAME_TITLE)
     clock = pygame.time.Clock()
-    running = True
-    darkness_overlay = get_overlay()
+    state = State.RUNNING
+    darkness_overlay = get_darkness_overlay()
 
     level = Level("levels/001.map")
 
     pygame.time.set_timer(pygame.event.Event(EVENT_GENERATE_OVERLAY), 800)
 
-    while running:
+    while state != State.STOPPED:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                state = state.STOPPED
 
-            elif event.type == pygame.KEYDOWN:
-                if event.key in MOVEMENT_CONTROLS:
-                    level.handle_movement(MOVEMENT_CONTROLS[event.key])
+            if state == State.RUNNING:
+                if event.type == pygame.KEYDOWN:
+                    if event.key in MOVEMENT_CONTROLS:
+                        level.handle_movement(MOVEMENT_CONTROLS[event.key])
+                elif event.type == EVENT_GENERATE_OVERLAY:
+                    darkness_overlay = get_darkness_overlay()
 
-            elif event.type == EVENT_GENERATE_OVERLAY:
-                darkness_overlay = get_overlay()
+            elif state == State.OVERLAY:
+                pass
 
         screen.fill((0, 0, 0))
 
@@ -61,8 +71,8 @@ def run():
     pygame.quit()
 
 
-def get_overlay():
-    # XXX make this better
+def get_darkness_overlay():
+    # XXX make this better and move it someplace else
     overlays = []
 
     max_dist = TILE_ROWS // 2

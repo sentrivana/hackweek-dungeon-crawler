@@ -8,7 +8,7 @@ from game.level.types import EntityType, TileType
 logger = logging.getLogger(__name__)
 
 
-class Assets:
+class AssetManager:
     """
     Asset manager.
 
@@ -36,23 +36,31 @@ class Assets:
     ORIGINAL_SIZE = 32
 
     def __init__(self):
-        self.tileset = pygame.image.load("assets/tileset.png")
+        original_tileset = pygame.image.load(self.FILENAME)
+        rows = original_tileset.get_height() // self.ORIGINAL_SIZE
+        cols = original_tileset.get_width() // self.ORIGINAL_SIZE
+
+        self.tileset = {
+            category: pygame.transform.scale(
+                original_tileset,
+                (self.SIZES[category] * cols, self.SIZES[category] * rows),
+            )
+            for category in self.SIZES.keys()
+        }
 
     def load(self, category, type_):
         sequence = self.MAPPING[category][type_]
-        # XXX support seqs
+        # XXX support sequences/animation
         r, c = sequence[0]
 
-        asset = self.tileset.subsurface(
-            c * self.ORIGINAL_SIZE,
-            r * self.ORIGINAL_SIZE,
-            self.ORIGINAL_SIZE,
-            self.ORIGINAL_SIZE,
-        )
         size = self.SIZES[category]
-        asset = pygame.transform.scale(asset, (size, size))
-
+        asset = self.tileset[category].subsurface(
+            c * size,
+            r * size,
+            size,
+            size,
+        )
         return asset
 
 
-ASSETS = Assets()
+ASSETS = AssetManager()

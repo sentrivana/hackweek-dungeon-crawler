@@ -1,0 +1,12 @@
+GAME_TITLE = "Untitled Dungeon Crawler"
+
+TILE_SIZE_PIXELS = 64
+ENTITY_SIZE_PIXELS = TILE_SIZE_PIXELS // 2
+
+# both TILE_ROWS and TILE_COLS should be odd for the main character to be
+# centered
+TILE_ROWS = 11
+TILE_COLS = TILE_ROWS + 4
+
+WINDOW_WIDTH = TILE_COLS * TILE_SIZE_PIXELS
+WINDOW_HEIGHT = TILE_ROWS * TILE_SIZE_PIXELS

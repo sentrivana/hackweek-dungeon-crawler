@@ -27,16 +27,7 @@ class Level:
 
     @property
     def top_left(self):
-        return (
-            min(
-                max(self.player.row - TILE_ROWS // 2, 0),
-                self.height - TILE_ROWS,
-            ),
-            min(
-                max(self.player.col - TILE_COLS // 2, 0),
-                self.width - TILE_COLS,
-            ),
-        )
+        return (self.player.row - TILE_ROWS // 2, self.player.col - TILE_COLS // 2)
 
     def tile(self, row, col):
         if self._tile_exists(row, col):
@@ -76,10 +67,7 @@ class Level:
         new_row = origin.row + vec[0]
         new_col = origin.col + vec[1]
 
-        if not self._tile_exists(new_row, new_col):
-            return None
-
-        return self.map[new_row][new_col]
+        return self.tile(new_row, new_col)
 
     def _can_move_to(self, target):
         return target and target.walkable

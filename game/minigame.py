@@ -24,15 +24,15 @@ class Minigame:
 
         self.started = False
         self.jitters = 0
+        self.flashes = 0
 
         self.surface_with_padding = pygame.surface.Surface((self.width, self.height))
-        self.surface_with_padding.fill("white")
 
         self.surface = self.surface_with_padding.subsurface(
             self.PADDING,
             self.PADDING,
             self.surface_with_padding.get_width() - self.PADDING * 2,
-            self.surface_with_padding.get_height() - self.PADDING * 2,
+            self.surface_with_padding.get_height() - self.PADDING * 8,
         )
 
         logger.debug("Minigame for enemy %s at %d %d created", enemy.type, *enemy.pos)
@@ -62,7 +62,12 @@ class Minigame:
         logger.debug("Minigame started")
 
     def render(self, screen, dt):
-        self.surface.fill(self.bg)
+        self.surface_with_padding.fill("white")
+        if self.flashes > 0:
+            self.surface.fill("white")
+            self.flashes -= 1
+        else:
+            self.surface.fill(self.bg)
 
         self._render_minigame(dt)
         self._render_enemy_health()
@@ -83,7 +88,13 @@ class Minigame:
         font = pygame.font.SysFont("monaco", self.FONT_SIZE)
         font_surface = font.render(f"Bug health: {self.enemy.health}", False, "black")
 
-        self.surface.blit(font_surface, (5, 5))
+        self.surface_with_padding.blit(
+            font_surface,
+            (
+                self.PADDING,
+                self.surface_with_padding.get_height() - self.FONT_SIZE - self.PADDING,
+            ),
+        )
 
     def input(self):
         raise NotImplementedError
@@ -122,7 +133,7 @@ class PrecisionMinigame(Minigame):
         ):
             post_event(CustomEvent.ENEMY_HIT, enemy=self.enemy)
         else:
-            post_event(CustomEvent.DAMAGE_RECEIVED)
+            post_event(CustomEvent.DAMAGE_RECEIVED, enemy=self.enemy)
 
 
 MINIGAMES = [PrecisionMinigame]

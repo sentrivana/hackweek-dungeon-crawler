@@ -32,7 +32,7 @@ class Entity:
 
         self.minigame = None
         if self.type == EntityType.ENEMY:
-            self.minigame = random.choice(MINIGAMES)
+            self.minigame = random.choice(MINIGAMES)(self, random.randint(5, 25))
 
         self.health = 3
 
@@ -66,7 +66,6 @@ class Entity:
                     CustomEvent.INITIALIZE_MINIGAME,
                     minigame=self.minigame,
                     enemy=self,
-                    difficulty=random.randint(1, 9),  # XXX
                 )
 
         if self.type == EntityType.SIGN:
@@ -76,3 +75,9 @@ class Entity:
         self.health -= 1
         if self.health <= 0:
             post_event(CustomEvent.ENEMY_DEFEATED, enemy=self)
+            return
+        self.minigame.flashes = 3
+
+    def player_hit(self):
+        if self.minigame is not None:
+            self.minigame.jitters = 3

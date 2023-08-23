@@ -3,9 +3,10 @@
 # homecooked crypto implementation!
 # super proud of this ngl
 
-# XXX: make this prettier
+# not sure what this does but it seems
+# to do the job most of the time
 
-# timezones suck but this should work
+# TODO
 
 # temp
 
@@ -13,3 +14,5 @@
 # code does,
 # but we shouldn't remove it, just in
 # case
+
+# TODO

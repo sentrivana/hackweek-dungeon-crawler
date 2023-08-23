@@ -1,6 +1,8 @@
 import logging
 import math
 
+import random
+
 import pygame
 
 from game.consts import WINDOW_HEIGHT, WINDOW_WIDTH
@@ -12,11 +14,25 @@ logger = logging.getLogger(__name__)
 
 
 class Minigame:
-    def __init__(self, enemy):
-        self.enemy = enemy
-        self.started = False
+    PADDING = 5
+    MAX_JITTER = 30
 
-        self.surface = pygame.surface.Surface((self.width, self.height))
+    def __init__(self, enemy, difficulty):
+        self.enemy = enemy
+        self.difficulty = difficulty
+
+        self.started = False
+        self.jitters = 0
+
+        self.surface_with_padding = pygame.surface.Surface((self.width, self.height))
+        self.surface_with_padding.fill("white")
+
+        self.surface = self.surface_with_padding.subsurface(
+            self.PADDING,
+            self.PADDING,
+            self.surface_with_padding.get_width() - self.PADDING * 2,
+            self.surface_with_padding.get_height() - self.PADDING * 2,
+        )
 
         logger.debug("Minigame for enemy %s at %d %d created", enemy.type, *enemy.pos)
 
@@ -34,7 +50,7 @@ class Minigame:
 
     @property
     def color2(self):
-        return "red"  # XXX
+        return (139, 109, 156)
 
     @property
     def bg(self):
@@ -46,27 +62,29 @@ class Minigame:
 
     def render(self, screen, dt):
         self.surface.fill(self.bg)
-        self._render(self.surface, dt)
-        screen.blit(
-            self.surface,
-            ((WINDOW_WIDTH - self.width) // 2, (WINDOW_HEIGHT - self.height) // 2),
-        )
+        self._render(dt)
+        left = (WINDOW_WIDTH - self.width) // 2
+        top = (WINDOW_HEIGHT - self.height) // 2
+        if self.jitters > 0:
+            top += random.randint(-self.MAX_JITTER, self.MAX_JITTER)
+            left += random.randint(-self.MAX_JITTER, self.MAX_JITTER)
+            self.jitters -= 1
+
+        screen.blit(self.surface_with_padding, (left, top))
 
     def input(self):
         raise NotImplementedError
 
 
 class PrecisionMinigame(Minigame):
-    TARGET = 30
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.pos = 0
         self.surface_width = self.surface.get_width()
-        self.target_width = math.ceil(self.surface_width * 0.3)
+        self.target_width = math.ceil(self.surface_width / 100 * self.difficulty)
 
-    def _render(self, surface, dt):
+    def _render(self, dt):
         pygame.draw.rect(
             self.surface,
             self.color2,
@@ -78,7 +96,7 @@ class PrecisionMinigame(Minigame):
             ),
         )
         pygame.draw.rect(
-            self.surface, self.color1, (self.pos, 0, 1, self.surface.get_height())
+            self.surface, self.color1, (self.pos, 0, 3, self.surface.get_height())
         )
 
         self.pos = (self.pos + 2) % self.surface_width

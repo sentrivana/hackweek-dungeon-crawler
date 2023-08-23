@@ -61,7 +61,10 @@ class Entity:
 
                 post_event(CustomEvent.SHOW_TEXT, text=self.text, color=self.color)
                 post_event(
-                    CustomEvent.INITIALIZE_MINIGAME, minigame=self.minigame, enemy=self
+                    CustomEvent.INITIALIZE_MINIGAME,
+                    minigame=self.minigame,
+                    enemy=self,
+                    difficulty=random.randint(1, 9),  # XXX
                 )
 
         if self.type == EntityType.SIGN:

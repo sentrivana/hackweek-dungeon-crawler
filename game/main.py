@@ -57,13 +57,15 @@ def run():
             if event.type == pygame.QUIT:
                 state = state.STOPPED
             elif event.type == CustomEvent.INITIALIZE_MINIGAME.value:
-                minigame = event.minigame(event.enemy)
+                minigame = event.minigame(event.enemy, event.difficulty)
             elif event.type == CustomEvent.ENEMY_DEFEATED.value:
                 level.remove_enemy(event.row, event.col)
                 minigame = None
                 state = State.RUNNING
             elif event.type == CustomEvent.DAMAGE_RECEIVED.value:
                 level.damage_received()
+                if minigame is not None:
+                    minigame.jitters = 3
             elif event.type == CustomEvent.GAME_OVER.value:
                 state = State.GAME_OVER
                 text_overlay.set_text("GAME OVER\n\n" + event.text)

@@ -113,13 +113,13 @@ def run():
             text_overlay.render(screen)
 
         elif state == State.MINIGAME:
-            minigame.render(screen, dt)
+            minigame.render(screen)
 
         if not hud_blink or not hud_overlay.should_blink:
             hud_overlay.render(screen)
 
         pygame.display.flip()
 
-        dt = clock.tick(60) / 1000
+        clock.tick(60)
 
     pygame.quit()

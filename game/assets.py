@@ -22,6 +22,7 @@ class AssetManager:
             EntityType.PLAYER: [15],
             EntityType.SIGN: [17],
             EntityType.ENEMY: [11, 12, 14, 18],
+            EntityType.TREE: [1, 21],
         },
         "tiles": {
             TileType.GROUND: [0, 8, 13],

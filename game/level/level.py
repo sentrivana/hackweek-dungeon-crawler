@@ -128,7 +128,7 @@ class Level:
                             self.entities[(row, col)] = Entity(
                                 self, row, col, entity_type
                             )
-                        elif entity_type == EntityType.SIGN:
+                        elif entity_type in (EntityType.SIGN, EntityType.TREE):
                             self.entities[(row, col)] = Entity(
                                 self, row, col, entity_type
                             )

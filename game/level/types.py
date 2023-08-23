@@ -11,6 +11,7 @@ class EntityType(Enum):
     PLAYER = 3
     ENEMY = 4
     SIGN = 5
+    TREE = 6
 
 
 class EntityMode(Enum):

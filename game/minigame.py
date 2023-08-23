@@ -62,7 +62,7 @@ class Minigame:
         self.started = True
         logger.debug("Minigame started")
 
-    def render(self, screen, dt):
+    def render(self, screen):
         self.surface_with_padding.fill("white")
         if self.flashes > 0:
             self.surface.fill("white")
@@ -70,7 +70,7 @@ class Minigame:
         else:
             self.surface.fill(self.bg)
 
-        self._render_minigame(dt)
+        self._render_minigame()
         self._render_enemy_health()
         self._render_blurp()
 
@@ -134,7 +134,7 @@ class Minigame:
 
 
 class PrecisionMinigame(Minigame):
-    def _render_minigame(self, dt):
+    def _render_minigame(self):
         pygame.draw.rect(
             self.surface,
             self.color2,

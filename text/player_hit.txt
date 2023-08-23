@@ -3,3 +3,5 @@ morale -= 1
 confusion += 1
 
 self-confidence -= 1
+
+questions += 1

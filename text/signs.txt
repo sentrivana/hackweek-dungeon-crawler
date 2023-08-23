@@ -1,18 +1,15 @@
-# TODO
-
-# homecooked crypto implementation!
-# super proud of this ngl
-
 # not sure what this does but it seems
 # to do the job most of the time
 
-# TODO
+# home-grown crypto implementation!
+# super proud of this ngl
 
-# temp
+# XXX temp, rewrite
+
+# I don't know what this structure does
+# and at this point I'm too afraid to
+# ask
 
 # no one I've asked knows what this
-# code does,
-# but we shouldn't remove it, just in
-# case
-
-# TODO
+# code path does, but we shouldn't
+# remove it, just in case

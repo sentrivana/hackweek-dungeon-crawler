@@ -7,3 +7,9 @@ print()!
 pdb.set_trace()!
 
 import traceback!
+
+caffeinated!
+
+pair programmed!
+
+asked on Slack!

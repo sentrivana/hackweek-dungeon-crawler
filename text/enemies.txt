@@ -1,11 +1,21 @@
-I'm not a bug.
-Just a really complicated feature.
-Why are you looking at me like that?
+Hey there programmer! What's up?
+What do you mean, am I a bug?
+That's kinda rude.
+
+If you haven't caused a CVE yet
+have you really lived?
 
 while True:
 
 Yes there's a newer version of the
 library I'm from, why do you ask?
+
+Hello, my name's ValueError,
+and you are?
+
+You wouldn't dare
+There's at least 3 people explicitly
+depending on me existing by now
 
 Oh. You found me.
 Listen, it's not what you think --
@@ -13,19 +23,3 @@ I'm here to make the program more fun!
 Will it crash or not this time?
 No way to tell! So exciting!
 What's life without a bit of adventure?
-
-Hello, my name's ValueError,
-and you are?
-
-If you haven't caused a CVE yet
-you haven't really lived.
-
-Hey there programmer! What's up?
-What do you mean, am I a bug?
-That's kinda rude.
-
-I've been here since the very beginning!
-I'm obviously a feature!
-I'm also part of the public API lol
-There's at least 3 people explicitly
-    depending on me by now.

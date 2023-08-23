@@ -34,6 +34,8 @@ class Entity:
         if self.type == EntityType.ENEMY:
             self.minigame = random.choice(MINIGAMES)
 
+        self.health = 3
+
         logger.debug("Spawned %s at %d %d", self.type, row, col)
 
     @property
@@ -69,3 +71,8 @@ class Entity:
 
         if self.type == EntityType.SIGN:
             post_event(CustomEvent.SHOW_TEXT, text=self.text)
+
+    def damage_received(self):
+        self.health -= 1
+        if self.health <= 0:
+            post_event(CustomEvent.ENEMY_DEFEATED, enemy=self)

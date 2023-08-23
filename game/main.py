@@ -58,8 +58,10 @@ def run():
                 state = state.STOPPED
             elif event.type == CustomEvent.INITIALIZE_MINIGAME.value:
                 minigame = event.minigame(event.enemy, event.difficulty)
+            elif event.type == CustomEvent.ENEMY_HIT.value:
+                event.enemy.damage_received()
             elif event.type == CustomEvent.ENEMY_DEFEATED.value:
-                level.remove_enemy(event.row, event.col)
+                level.remove_enemy(event.enemy.row, event.enemy.col)
                 minigame = None
                 state = State.RUNNING
             elif event.type == CustomEvent.DAMAGE_RECEIVED.value:

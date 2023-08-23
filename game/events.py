@@ -14,3 +14,4 @@ class CustomEvent(enum.Enum):
     DAMAGE_RECEIVED = pygame.USEREVENT + 7
     LEVEL_CLEARED = pygame.USEREVENT + 8
     HUD_BLINK = pygame.USEREVENT + 9
+    ENEMY_HIT = pygame.USEREVENT + 10

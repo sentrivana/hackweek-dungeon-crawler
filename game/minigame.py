@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 class Minigame:
     PADDING = 5
     MAX_JITTER = 30
+    FONT_SIZE = 12
 
     def __init__(self, enemy, difficulty):
         self.enemy = enemy
@@ -62,7 +63,10 @@ class Minigame:
 
     def render(self, screen, dt):
         self.surface.fill(self.bg)
-        self._render(dt)
+
+        self._render_minigame(dt)
+        self._render_enemy_health()
+
         left = (WINDOW_WIDTH - self.width) // 2
         top = (WINDOW_HEIGHT - self.height) // 2
         if self.jitters > 0:
@@ -71,6 +75,15 @@ class Minigame:
             self.jitters -= 1
 
         screen.blit(self.surface_with_padding, (left, top))
+
+    def _render_minigame(self):
+        raise NotImplementedError
+
+    def _render_enemy_health(self):
+        font = pygame.font.SysFont("monaco", self.FONT_SIZE)
+        font_surface = font.render(f"Bug health: {self.enemy.health}", False, "black")
+
+        self.surface.blit(font_surface, (5, 5))
 
     def input(self):
         raise NotImplementedError
@@ -84,7 +97,7 @@ class PrecisionMinigame(Minigame):
         self.surface_width = self.surface.get_width()
         self.target_width = math.ceil(self.surface_width / 100 * self.difficulty)
 
-    def _render(self, dt):
+    def _render_minigame(self, dt):
         pygame.draw.rect(
             self.surface,
             self.color2,
@@ -107,9 +120,7 @@ class PrecisionMinigame(Minigame):
             <= self.pos
             <= (self.surface_width - self.target_width) // 2 + self.target_width
         ):
-            post_event(
-                CustomEvent.ENEMY_DEFEATED, row=self.enemy.row, col=self.enemy.col
-            )
+            post_event(CustomEvent.ENEMY_HIT, enemy=self.enemy)
         else:
             post_event(CustomEvent.DAMAGE_RECEIVED)
 

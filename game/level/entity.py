@@ -13,7 +13,8 @@ logger = logging.getLogger(__name__)
 
 
 class Entity:
-    def __init__(self, row, col, type_):
+    def __init__(self, level, row, col, type_):
+        self.level = level
         self.row = row
         self.col = col
         self.type = type_
@@ -32,7 +33,7 @@ class Entity:
 
         self.minigame = None
         if self.type == EntityType.ENEMY:
-            self.minigame = random.choice(MINIGAMES)(self, random.randint(5, 25))
+            self.minigame = random.choice(MINIGAMES)(self)
 
         self.health = 3
 
@@ -79,6 +80,7 @@ class Entity:
 
         self.minigame.flashes = 3
         self.minigame.set_blurp(TEXTS.get_text("enemy_hit", exhaust=False), good=True)
+        self.minigame.reset()
 
     def player_hit(self):
         if self.minigame is not None:
@@ -86,3 +88,4 @@ class Entity:
             self.minigame.set_blurp(
                 TEXTS.get_text("player_hit", exhaust=False), good=False
             )
+            self.minigame.reset()

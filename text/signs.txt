@@ -1,9 +1,11 @@
 # TODO
 
-# timezones suck but this should work
-
 # homecooked crypto implementation!
 # super proud of this ngl
+
+# XXX: make this prettier
+
+# timezones suck but this should work
 
 # temp
 

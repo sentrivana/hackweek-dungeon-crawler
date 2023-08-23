@@ -18,9 +18,9 @@ class Minigame:
     MAX_JITTER = 30
     FONT_SIZE = 12
 
-    def __init__(self, enemy, difficulty):
+    def __init__(self, enemy):
         self.enemy = enemy
-        self.difficulty = difficulty
+        self.difficulty = 0
 
         self.started = False
         self.jitters = 0
@@ -115,6 +115,7 @@ class Minigame:
             self.blurp_color = "red"
 
         font = pygame.font.SysFont("monaco", self.FONT_SIZE)
+        font.set_bold(True)
         self.blurp_surface = font.render(self.blurp, False, self.blurp_color)
         self.blurp_pos = (
             random.randint(
@@ -128,15 +129,11 @@ class Minigame:
     def input(self):
         raise NotImplementedError
 
+    def reset(self):
+        raise NotImplementedError
+
 
 class PrecisionMinigame(Minigame):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.pos = 0
-        self.surface_width = self.surface.get_width()
-        self.target_width = math.ceil(self.surface_width / 100 * self.difficulty)
-
     def _render_minigame(self, dt):
         pygame.draw.rect(
             self.surface,
@@ -149,10 +146,10 @@ class PrecisionMinigame(Minigame):
             ),
         )
         pygame.draw.rect(
-            self.surface, self.color1, (self.pos, 0, 3, self.surface.get_height())
+            self.surface, self.color1, (self.pos, 0, 2, self.surface.get_height())
         )
 
-        self.pos = (self.pos + 2) % self.surface_width
+        self.pos = (self.pos + min(self.difficulty, 4)) % self.surface_width
 
     def input(self):
         if (
@@ -163,6 +160,25 @@ class PrecisionMinigame(Minigame):
             post_event(CustomEvent.ENEMY_HIT, enemy=self.enemy)
         else:
             post_event(CustomEvent.DAMAGE_RECEIVED, enemy=self.enemy)
+
+    def reset(self):
+        self.pos = random.randint(0, self.surface_width)
+
+    def start(self):
+        self.difficulty = (
+            self.enemy.level.max_enemies + 1 - self.enemy.level.enemy_count
+        )
+        self.pos = 0
+        self.surface_width = self.surface.get_width()
+        self.target_width = max(
+            math.ceil(self.surface_width // 2 // self.difficulty), 15
+        )
+        logger.debug(
+            "Minigame difficulty is %d. Surface: %d Target: %d",
+            self.difficulty,
+            self.surface_width,
+            self.target_width,
+        )
 
 
 MINIGAMES = [PrecisionMinigame]

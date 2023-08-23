@@ -27,7 +27,7 @@ class HUDOverlay:
             color = (242, 211, 171)
         else:
             color = (200, 0, 0)
-        font_surface = font.render(f"Mistakes left: {self.level.health}", False, color)
+        font_surface = font.render(f"Energy left: {self.level.health}", False, color)
 
         screen.blit(font_surface, (10, 10))
 
@@ -41,10 +41,6 @@ class TextOverlay:
     @property
     def width(self):
         return WINDOW_WIDTH - WINDOW_WIDTH // 2
-
-    @property
-    def height(self):
-        return WINDOW_HEIGHT - WINDOW_HEIGHT // 2
 
     def set_text(self, text, color=None):
         self.text = text
@@ -72,12 +68,17 @@ class TextOverlay:
                 )
             )
 
-        overlay = pygame.Surface((self.width, self.height))
+        overlay = pygame.Surface(
+            (self.width, font_surfaces[-1][1][1] + 2 * self.FONT_SIZE)
+        )
         overlay.blits(font_surfaces)
 
         screen.blit(
             overlay,
-            ((WINDOW_WIDTH - self.width) // 2, (WINDOW_HEIGHT - self.height) // 2),
+            (
+                (WINDOW_WIDTH - self.width) // 2,
+                (WINDOW_HEIGHT - overlay.get_height()) // 2,
+            ),
         )
 
 

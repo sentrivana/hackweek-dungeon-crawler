@@ -18,7 +18,8 @@ class Level:
         self.entities = {}
         self.player = None
         self.health = MAX_HEALTH
-        self.enemy_count = None
+        self.enemy_count = 0
+        self.max_enemies = 0
 
         self._load_map(filename)
 
@@ -120,11 +121,16 @@ class Level:
                     try:
                         entity_type = EntityType(code)
                         if entity_type == EntityType.PLAYER:
-                            self.player = Entity(row, col, entity_type)
+                            self.player = Entity(self, row, col, entity_type)
                         elif entity_type == EntityType.ENEMY:
-                            self.entities[(row, col)] = Entity(row, col, entity_type)
                             self.enemy_count += 1
+                            self.max_enemies += 1
+                            self.entities[(row, col)] = Entity(
+                                self, row, col, entity_type
+                            )
                         elif entity_type == EntityType.SIGN:
-                            self.entities[(row, col)] = Entity(row, col, entity_type)
+                            self.entities[(row, col)] = Entity(
+                                self, row, col, entity_type
+                            )
                     except ValueError:
                         pass

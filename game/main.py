@@ -70,9 +70,11 @@ def run():
             elif event.type == CustomEvent.GAME_OVER.value:
                 state = State.GAME_OVER
                 text_overlay.set_text("GAME OVER\n\n" + event.text)
+                text_overlay.color = "red"
             elif event.type == CustomEvent.LEVEL_CLEARED.value:
                 state = State.LEVEL_CLEARED
                 text_overlay.set_text("LEVEL CLEARED!\n\n" + event.text)
+                text_overlay.color = "green"
             elif event.type == CustomEvent.HUD_BLINK.value:
                 hud_blink = not hud_blink
 

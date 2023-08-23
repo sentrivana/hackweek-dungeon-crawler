@@ -1,5 +1,5 @@
-morale--
+morale -= 1
 
-confusion++
+confusion += 1
 
-self-confidence--
+self-confidence -= 1

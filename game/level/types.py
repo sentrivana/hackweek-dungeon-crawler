@@ -12,6 +12,12 @@ class EntityType(Enum):
     ENEMY = 4
     SIGN = 5
     TREE = 6
+    KEY = 7
+    DOOR = 8
+
+
+class ItemType(Enum):
+    KEY = 0
 
 
 class EntityMode(Enum):

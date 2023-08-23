@@ -23,10 +23,12 @@ class AssetManager:
             EntityType.SIGN: [17],
             EntityType.ENEMY: [11, 12, 14, 18],
             EntityType.TREE: [1, 21],
+            EntityType.KEY: [26],
+            EntityType.DOOR: [27],
         },
         "tiles": {
             TileType.GROUND: [0, 8, 13],
-            TileType.HAZARD: [22],
+            TileType.HAZARD: [22, 23],
             TileType.WALL: [3],
         },
     }

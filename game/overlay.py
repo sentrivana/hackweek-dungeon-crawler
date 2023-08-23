@@ -19,15 +19,17 @@ class HUDOverlay:
 
     @property
     def should_blink(self):
-        return self.level.health <= 1
+        return self.level.player.health <= 1
 
     def render(self, screen):
         font = pygame.font.SysFont("monaco", self.FONT_SIZE)
-        if self.level.health > 1:
+        if self.level.player.health > 1:
             color = (242, 211, 171)
         else:
             color = (200, 0, 0)
-        font_surface = font.render(f"Energy left: {self.level.health}", False, color)
+        font_surface = font.render(
+            f"Energy left: {self.level.player.health}", False, color
+        )
 
         screen.blit(font_surface, (10, 10))
 

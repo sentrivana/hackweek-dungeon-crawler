@@ -56,25 +56,32 @@ def run():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 state = state.STOPPED
+
             elif event.type == CustomEvent.INITIALIZE_MINIGAME.value:
                 minigame = event.minigame
+
             elif event.type == CustomEvent.ENEMY_HIT.value:
                 event.enemy.damage_received()
+
             elif event.type == CustomEvent.ENEMY_DEFEATED.value:
-                level.remove_enemy(event.enemy.row, event.enemy.col)
+                level.remove_entity(event.enemy)
                 minigame = None
                 state = State.RUNNING
+
             elif event.type == CustomEvent.DAMAGE_RECEIVED.value:
                 level.damage_received()
                 event.enemy.player_hit()
+
             elif event.type == CustomEvent.GAME_OVER.value:
                 state = State.GAME_OVER
                 text_overlay.set_text("GAME OVER\n\n" + event.text)
                 text_overlay.color = "red"
+
             elif event.type == CustomEvent.LEVEL_CLEARED.value:
                 state = State.LEVEL_CLEARED
                 text_overlay.set_text("LEVEL CLEARED!\n\n" + event.text)
                 text_overlay.color = "green"
+
             elif event.type == CustomEvent.HUD_BLINK.value:
                 hud_blink = not hud_blink
 
@@ -89,6 +96,12 @@ def run():
                 elif event.type == CustomEvent.SHOW_TEXT.value:
                     state = State.OVERLAY
                     text_overlay.set_text(event.text, getattr(event, "color", None))
+
+                elif event.type == CustomEvent.KEY_PICKED_UP.value:
+                    level.remove_entity(event.entity)
+
+                elif event.type == CustomEvent.DOOR_OPENED.value:
+                    level.remove_entity(event.entity)
 
             elif state == State.OVERLAY:
                 if event.type == pygame.KEYDOWN:

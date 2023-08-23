@@ -15,3 +15,5 @@ class CustomEvent(enum.Enum):
     LEVEL_CLEARED = pygame.USEREVENT + 8
     HUD_BLINK = pygame.USEREVENT + 9
     ENEMY_HIT = pygame.USEREVENT + 10
+    KEY_PICKED_UP = pygame.USEREVENT + 11
+    DOOR_OPENED = pygame.USEREVENT + 12

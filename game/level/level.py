@@ -1,12 +1,12 @@
 import logging
 
 from game.assets import TEXTS
-from game.consts import MAX_HEALTH, TILE_COLS, TILE_ROWS
+from game.consts import TILE_COLS, TILE_ROWS
 from game.controls import Direction
 from game.events import CustomEvent
-from game.level.entity import Entity
+from game.level.entity import Door, Enemy, Player, Tree, Key, Sign
 from game.level.tile import Tile
-from game.level.types import EntityType, TileType
+from game.level.types import EntityType, ItemType, TileType
 from game.utils import post_event
 
 logger = logging.getLogger(__name__)
@@ -17,7 +17,6 @@ class Level:
         self.map = []
         self.entities = {}
         self.player = None
-        self.health = MAX_HEALTH
         self.enemy_count = 0
         self.max_enemies = 0
 
@@ -61,16 +60,24 @@ class Level:
             self.player.row = target.row
             self.player.col = target.col
 
-    def remove_enemy(self, row, col):
+    def remove_entity(self, entity):
+        row = entity.row
+        col = entity.col
+        if self.entities[(row, col)].type == EntityType.ENEMY:
+            self.enemy_count -= 1
+        elif self.entities[(row, col)].type == EntityType.KEY:
+            self.player.inventory.append(ItemType.KEY)
+
         del self.entities[(row, col)]
-        self.enemy_count -= 1
+
         logger.debug("Entity at %d %d deleted", row, col)
+
         if self.enemy_count <= 0:
             post_event(CustomEvent.LEVEL_CLEARED, text=TEXTS.get_text("level_cleared"))
 
     def damage_received(self):
-        self.health -= 1
-        if self.health <= 0:
+        self.player.health -= 1
+        if self.player.health <= 0:
             post_event(CustomEvent.GAME_OVER, text=TEXTS.get_text("game_over"))
 
     def dist_to_player(self, tile):
@@ -121,15 +128,25 @@ class Level:
                     try:
                         entity_type = EntityType(code)
                         if entity_type == EntityType.PLAYER:
-                            self.player = Entity(self, row, col, entity_type)
+                            self.player = Player(self, row, col, entity_type)
                         elif entity_type == EntityType.ENEMY:
                             self.enemy_count += 1
                             self.max_enemies += 1
-                            self.entities[(row, col)] = Entity(
+                            self.entities[(row, col)] = Enemy(
                                 self, row, col, entity_type
                             )
-                        elif entity_type in (EntityType.SIGN, EntityType.TREE):
-                            self.entities[(row, col)] = Entity(
+                        elif entity_type == EntityType.SIGN:
+                            self.entities[(row, col)] = Sign(
+                                self, row, col, entity_type
+                            )
+                        elif entity_type == EntityType.KEY:
+                            self.entities[(row, col)] = Key(self, row, col, entity_type)
+                        elif entity_type == EntityType.TREE:
+                            self.entities[(row, col)] = Tree(
+                                self, row, col, entity_type
+                            )
+                        elif entity_type == EntityType.DOOR:
+                            self.entities[(row, col)] = Door(
                                 self, row, col, entity_type
                             )
                     except ValueError:

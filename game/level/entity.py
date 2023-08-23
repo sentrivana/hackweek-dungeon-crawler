@@ -4,7 +4,7 @@ import random
 from game.assets import ASSETS, TEXTS
 from game.consts import ENTITY_SIZE_PIXELS, TILE_SIZE_PIXELS
 from game.events import CustomEvent
-from game.level.types import EntityMode, EntityType
+from game.level.types import EntityMode, ItemType
 from game.minigame import MINIGAMES
 from game.utils import post_event
 
@@ -13,6 +13,8 @@ logger = logging.getLogger(__name__)
 
 
 class Entity:
+    MAX_HEALTH = 3
+
     def __init__(self, level, row, col, type_):
         self.level = level
         self.row = row
@@ -25,17 +27,7 @@ class Entity:
 
         self.text = None
         self.color = None
-        if self.type == EntityType.ENEMY:
-            self.text = TEXTS.get_text("enemies")
-            self.color = random.choice(["magenta", "green", "cyan", "violet"])
-        elif self.type == EntityType.SIGN:
-            self.text = TEXTS.get_text("signs")
-
         self.minigame = None
-        if self.type == EntityType.ENEMY:
-            self.minigame = random.choice(MINIGAMES)(self)
-
-        self.health = 3
 
         logger.debug("Spawned %s at %d %d", self.type, row, col)
 
@@ -58,20 +50,6 @@ class Entity:
     def interact(self):
         logger.debug("Interacting with %s at %d %d", self.type, self.row, self.col)
 
-        if self.type == EntityType.ENEMY:
-            if self.mode == EntityMode.IDLE:
-                self.mode = EntityMode.FIGHT
-
-                post_event(CustomEvent.SHOW_TEXT, text=self.text, color=self.color)
-                post_event(
-                    CustomEvent.INITIALIZE_MINIGAME,
-                    minigame=self.minigame,
-                    enemy=self,
-                )
-
-        if self.type == EntityType.SIGN:
-            post_event(CustomEvent.SHOW_TEXT, text=self.text)
-
     def damage_received(self):
         self.health -= 1
         if self.health <= 0:
@@ -89,3 +67,57 @@ class Entity:
                 TEXTS.get_text("player_hit", exhaust=False), good=False
             )
             self.minigame.reset()
+
+
+class Player(Entity):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.inventory = []
+        self.health = self.MAX_HEALTH
+
+
+class Sign(Entity):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.text = TEXTS.get_text("signs")
+
+    def interact(self):
+        post_event(CustomEvent.SHOW_TEXT, text=self.text)
+
+
+class Enemy(Entity):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.text = TEXTS.get_text("enemies")
+        self.color = random.choice(["magenta", "green", "cyan", "violet"])
+        self.minigame = random.choice(MINIGAMES)(self)
+        self.health = self.MAX_HEALTH
+
+    def interact(self):
+        if self.mode == EntityMode.IDLE:
+            self.mode = EntityMode.FIGHT
+
+            post_event(CustomEvent.SHOW_TEXT, text=self.text, color=self.color)
+            post_event(
+                CustomEvent.INITIALIZE_MINIGAME,
+                minigame=self.minigame,
+                enemy=self,
+            )
+
+
+class Key(Entity):
+    def interact(self):
+        post_event(CustomEvent.KEY_PICKED_UP, entity=self)
+
+
+class Door(Entity):
+    def interact(self):
+        if ItemType.KEY in self.level.player.inventory:
+            post_event(CustomEvent.DOOR_OPENED, entity=self)
+
+
+class Tree(Entity):
+    pass

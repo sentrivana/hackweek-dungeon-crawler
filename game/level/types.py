@@ -1,17 +1,16 @@
 from enum import Enum
 
 
-class EntityType(Enum):
-    EMPTY = 0
-    PLAYER = 1
-    ENEMY = 2
-    SIGN = 3
-
-
 class TileType(Enum):
     GROUND = 0
     WALL = 1
     HAZARD = 2
+
+
+class EntityType(Enum):
+    PLAYER = 3
+    ENEMY = 4
+    SIGN = 5
 
 
 class EntityMode(Enum):

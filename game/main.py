@@ -22,6 +22,7 @@ class State(enum.Enum):
     MINIGAME = 2
     STOPPED = 3
     GAME_OVER = 4
+    LEVEL_CLEARED = 5
 
 
 def run():
@@ -78,6 +79,9 @@ def run():
             elif event.type == CustomEvent.GAME_OVER.value:
                 state = State.GAME_OVER
                 text_overlay.set_text("GAME OVER\n\n" + event.text)
+            elif event.type == CustomEvent.LEVEL_CLEARED.value:
+                state = State.LEVEL_CLEARED
+                text_overlay.set_text("LEVEL CLEARED!\n\n" + event.text)
 
             if state == State.RUNNING:
                 if event.type == pygame.KEYDOWN:
@@ -110,7 +114,7 @@ def run():
 
         torchlight_overlay.render(screen)
 
-        if state in (State.OVERLAY, State.GAME_OVER):
+        if state in (State.OVERLAY, State.GAME_OVER, State.LEVEL_CLEARED):
             text_overlay.render(screen)
 
         elif state == State.MINIGAME:

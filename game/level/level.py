@@ -1,7 +1,7 @@
 import logging
 import random
 
-from game.assets import ASSETS
+from game.assets import TEXTS
 from game.consts import MAX_HEALTH, TILE_COLS, TILE_ROWS
 from game.controls import Direction
 from game.events import CustomEvent
@@ -19,6 +19,7 @@ class Level:
         self.entities = {}
         self.player = None
         self.health = MAX_HEALTH
+        self.enemy_count = None
 
         self._load_map(filename)
 
@@ -62,14 +63,15 @@ class Level:
 
     def remove_enemy(self, row, col):
         del self.entities[(row, col)]
+        self.enemy_count -= 1
         logger.debug("Entity at %d %d deleted", row, col)
+        if self.enemy_count <= 0:
+            post_event(CustomEvent.LEVEL_CLEARED, text=TEXTS.get_text("level_cleared"))
 
     def damage_received(self):
         self.health -= 1
         if self.health <= 0:
-            post_event(
-                CustomEvent.GAME_OVER, text=random.choice(ASSETS.game_over_blurps)
-            )
+            post_event(CustomEvent.GAME_OVER, text=TEXTS.get_text("game_over"))
 
     def dist_to_player(self, tile):
         return max(abs(tile.row - self.player.row), abs(tile.col - self.player.col))
@@ -102,29 +104,28 @@ class Level:
         )
 
     def _load_map(self, filename):
+        self.enemy_count = 0
+
         with open(filename) as map_file:
-            level_read = False
-
             for row, line in enumerate(map_file):
-                line = line.strip()
+                self.map.append([])
+                for col, code in enumerate(line.strip()):
+                    code = int(code)
+                    try:
+                        tile_type = TileType(code)
+                    except ValueError:
+                        tile_type = TileType(TileType.GROUND)
 
-                if not line:
-                    level_read = True
-                    row_offset = row + 1
+                    self.map[-1].append(Tile(row, col, tile_type))
 
-                if not level_read:
-                    self.map.append([])
-                    for col, code in enumerate(line.strip()):
-                        self.map[-1].append(Tile(row, col, TileType(int(code))))
-
-                else:
-                    actual_row = row - row_offset
-
-                    for col, code in enumerate(line.strip()):
-                        entity_type = EntityType(int(code))
+                    try:
+                        entity_type = EntityType(code)
                         if entity_type == EntityType.PLAYER:
-                            self.player = Entity(actual_row, col, entity_type)
-                        elif entity_type in (EntityType.ENEMY, EntityType.SIGN):
-                            self.entities[(actual_row, col)] = Entity(
-                                actual_row, col, entity_type
-                            )
+                            self.player = Entity(row, col, entity_type)
+                        elif entity_type == EntityType.ENEMY:
+                            self.entities[(row, col)] = Entity(row, col, entity_type)
+                            self.enemy_count += 1
+                        elif entity_type == EntityType.SIGN:
+                            self.entities[(row, col)] = Entity(row, col, entity_type)
+                    except ValueError:
+                        pass

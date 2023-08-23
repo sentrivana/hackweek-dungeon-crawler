@@ -11,17 +11,12 @@ logger = logging.getLogger(__name__)
 
 class AssetManager:
     """
-    Asset/text manager.
+    Asset manager.
 
     Tileset from https://thedigitaldauber.itch.io/pocket-fables-fantasy-adventure-pack
     """
 
-    # XXX nice paths instead of hardcoded
-    ASSETS_FILENAME = "assets/tileset2.png"
-    ENEMY_BLURPS_FILENAME = "text/enemies.txt"
-    SIGN_BLURPS_FILENAME = "text/signs.txt"
-    GAME_OVER_BLURPS_FILENAME = "text/game_over.txt"
-
+    FILENAME = "assets/tileset.png"
     MAPPING = {
         "entities": {
             EntityType.PLAYER: [15],
@@ -41,7 +36,7 @@ class AssetManager:
     ORIGINAL_SIZE = 16
 
     def __init__(self):
-        original_tileset = pygame.image.load(self.ASSETS_FILENAME)
+        original_tileset = pygame.image.load(self.FILENAME)
         rows = original_tileset.get_height() // self.ORIGINAL_SIZE
         cols = original_tileset.get_width() // self.ORIGINAL_SIZE
 
@@ -52,20 +47,6 @@ class AssetManager:
             )
             for category in self.SIZES.keys()
         }
-
-        with open(self.ENEMY_BLURPS_FILENAME) as text_file:
-            contents = "".join(text_file.readlines())
-        self.enemy_blurps = contents.split("\n\n")
-        self.enemy_blurps.reverse()
-
-        with open(self.SIGN_BLURPS_FILENAME) as text_file:
-            contents = "".join(text_file.readlines())
-        self.sign_blurps = contents.split("\n\n")
-        self.sign_blurps.reverse()
-
-        with open(self.GAME_OVER_BLURPS_FILENAME) as text_file:
-            contents = "".join(text_file.readlines())
-        self.game_over_blurps = contents.split("\n\n")
 
     def load(self, category, type_):
         options = self.MAPPING[category][type_]
@@ -80,4 +61,29 @@ class AssetManager:
         return asset
 
 
+class TextManager:
+    FILENAMES = {
+        "enemies": "text/enemies.txt",
+        "signs": "text/signs.txt",
+        "game_over": "text/game_over.txt",
+        "level_cleared": "text/level_cleared.txt",
+    }
+
+    def __init__(self):
+        self.text = {}
+
+        for category, filename in self.FILENAMES.items():
+            with open(filename) as text_file:
+                contents = "".join(text_file.readlines())
+                self.text[category] = contents.split("\n\n")
+                self.text[category].reverse()
+
+    def get_text(self, category, exhaust=True):
+        if exhaust:
+            return self.text[category].pop()
+        else:
+            return random.choice(self.text[category])
+
+
 ASSETS = AssetManager()
+TEXTS = TextManager()

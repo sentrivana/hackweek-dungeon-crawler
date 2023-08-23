@@ -12,3 +12,4 @@ class CustomEvent(enum.Enum):
     INITIALIZE_MINIGAME = pygame.USEREVENT + 5
     START_MINIGAME = pygame.USEREVENT + 6
     DAMAGE_RECEIVED = pygame.USEREVENT + 7
+    LEVEL_CLEARED = pygame.USEREVENT + 8

@@ -1,7 +1,7 @@
 import logging
 import random
 
-from game.assets import ASSETS
+from game.assets import ASSETS, TEXTS
 from game.consts import ENTITY_SIZE_PIXELS, TILE_SIZE_PIXELS
 from game.events import CustomEvent
 from game.level.types import EntityMode, EntityType
@@ -25,10 +25,10 @@ class Entity:
         self.text = None
         self.color = None
         if self.type == EntityType.ENEMY:
-            self.text = ASSETS.enemy_blurps.pop()
+            self.text = TEXTS.get_text("enemies")
             self.color = random.choice(["magenta", "green", "cyan", "violet"])
         elif self.type == EntityType.SIGN:
-            self.text = ASSETS.sign_blurps.pop()
+            self.text = TEXTS.get_text("signs")
 
         self.minigame = None
         if self.type == EntityType.ENEMY:

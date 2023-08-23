@@ -41,10 +41,12 @@ def run():
 
     level = Level("levels/001.map")
     hud_overlay = HUDOverlay(level)
+    hud_blink = False
 
     pygame.time.set_timer(
         pygame.event.Event(CustomEvent.REGENERATE_TORCHLIGHT.value), 800
     )
+    pygame.time.set_timer(pygame.event.Event(CustomEvent.HUD_BLINK.value), 500)
 
     pygame.event.post(
         pygame.event.Event(CustomEvent.SHOW_TEXT.value, text=TEXTS.get_text("intro"))
@@ -68,6 +70,8 @@ def run():
             elif event.type == CustomEvent.LEVEL_CLEARED.value:
                 state = State.LEVEL_CLEARED
                 text_overlay.set_text("LEVEL CLEARED!\n\n" + event.text)
+            elif event.type == CustomEvent.HUD_BLINK.value:
+                hud_blink = not hud_blink
 
             if state == State.RUNNING:
                 if event.type == pygame.KEYDOWN:
@@ -106,7 +110,8 @@ def run():
         elif state == State.MINIGAME:
             minigame.render(screen, dt)
 
-        hud_overlay.render(screen)
+        if not hud_blink or not hud_overlay.should_blink:
+            hud_overlay.render(screen)
 
         pygame.display.flip()
 

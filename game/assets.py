@@ -72,6 +72,7 @@ class TextManager:
     SPLIT = [
         "enemies",
         "signs",
+        "game_over",
     ]
 
     def __init__(self):

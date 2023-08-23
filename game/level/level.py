@@ -1,5 +1,4 @@
 import logging
-import random
 
 from game.assets import TEXTS
 from game.consts import MAX_HEALTH, TILE_COLS, TILE_ROWS

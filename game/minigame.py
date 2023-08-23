@@ -25,9 +25,10 @@ class Minigame:
         self.started = False
         self.jitters = 0
         self.flashes = 0
+        self.blurp = None
+        self.blurp_show = 0
 
         self.surface_with_padding = pygame.surface.Surface((self.width, self.height))
-
         self.surface = self.surface_with_padding.subsurface(
             self.PADDING,
             self.PADDING,
@@ -71,6 +72,7 @@ class Minigame:
 
         self._render_minigame(dt)
         self._render_enemy_health()
+        self._render_blurp()
 
         left = (WINDOW_WIDTH - self.width) // 2
         top = (WINDOW_HEIGHT - self.height) // 2
@@ -94,6 +96,29 @@ class Minigame:
                 self.PADDING,
                 self.surface_with_padding.get_height() - self.FONT_SIZE - self.PADDING,
             ),
+        )
+
+    def _render_blurp(self):
+        if self.blurp and self.blurp_show > 0:
+            font = pygame.font.SysFont("monaco", self.FONT_SIZE)
+            font_surface = font.render(self.blurp, False, self.blurp_color)
+
+            self.surface.blit(
+                font_surface,
+                self.blurp_pos,
+            )
+            self.blurp_show -= 1
+
+    def set_blurp(self, blurp, good):
+        self.blurp = blurp
+        self.blurp_show = 50
+        if good:
+            self.blurp_color = "green"
+        else:
+            self.blurp_color = "red"
+        self.blurp_pos = (
+            random.randint(0, self.surface.get_width() - 100),
+            random.randint(0, self.surface.get_height() - 100),
         )
 
     def input(self):

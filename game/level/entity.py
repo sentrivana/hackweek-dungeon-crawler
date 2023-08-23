@@ -76,8 +76,13 @@ class Entity:
         if self.health <= 0:
             post_event(CustomEvent.ENEMY_DEFEATED, enemy=self)
             return
+
         self.minigame.flashes = 3
+        self.minigame.set_blurp(TEXTS.get_text("enemy_hit", exhaust=False), good=True)
 
     def player_hit(self):
         if self.minigame is not None:
             self.minigame.jitters = 3
+            self.minigame.set_blurp(
+                TEXTS.get_text("player_hit", exhaust=False), good=False
+            )

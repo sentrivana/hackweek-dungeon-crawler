@@ -68,11 +68,15 @@ class TextManager:
         "signs": "text/signs.txt",
         "game_over": "text/game_over.txt",
         "level_cleared": "text/level_cleared.txt",
+        "enemy_hit": "text/enemy_hit.txt",
+        "player_hit": "text/player_hit.txt",
     }
     SPLIT = [
         "enemies",
         "signs",
         "game_over",
+        "enemy_hit",
+        "player_hit",
     ]
 
     def __init__(self):

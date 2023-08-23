@@ -5,6 +5,7 @@ import sys
 
 import pygame
 
+from game.assets import TEXTS
 from game.consts import GAME_TITLE, WINDOW_HEIGHT, WINDOW_WIDTH
 from game.controls import MOVEMENT_CONTROLS
 from game.events import CustomEvent
@@ -45,24 +46,9 @@ def run():
         pygame.event.Event(CustomEvent.REGENERATE_TORCHLIGHT.value), 800
     )
 
-    # XXX put this somewhere
-    from textwrap import dedent
-
-    text = dedent(
-        """\
-        Another day,
-        another bug squashing mission.
-
-        Never seen this codebase before.
-
-        Hope there's at least some
-        documentation.
-
-        Oh hey I already see some
-        comments!
-    """
+    pygame.event.post(
+        pygame.event.Event(CustomEvent.SHOW_TEXT.value, text=TEXTS.get_text("intro"))
     )
-    pygame.event.post(pygame.event.Event(CustomEvent.SHOW_TEXT.value, text=text))
 
     while state != State.STOPPED:
         for event in pygame.event.get():

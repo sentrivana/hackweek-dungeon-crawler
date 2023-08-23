@@ -1,0 +1,10 @@
+Another day,
+another bug squashing mission.
+
+Never seen this codebase before.
+
+Hope there's at least some
+documentation.
+
+Oh hey I already see some
+comments!

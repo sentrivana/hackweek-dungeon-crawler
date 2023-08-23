@@ -63,11 +63,16 @@ class AssetManager:
 
 class TextManager:
     FILENAMES = {
+        "intro": "text/intro.txt",
         "enemies": "text/enemies.txt",
         "signs": "text/signs.txt",
         "game_over": "text/game_over.txt",
         "level_cleared": "text/level_cleared.txt",
     }
+    SPLIT = [
+        "enemies",
+        "signs",
+    ]
 
     def __init__(self):
         self.text = {}
@@ -75,8 +80,12 @@ class TextManager:
         for category, filename in self.FILENAMES.items():
             with open(filename) as text_file:
                 contents = "".join(text_file.readlines())
-                self.text[category] = contents.split("\n\n")
-                self.text[category].reverse()
+                if category in self.SPLIT:
+                    contents = contents.split("\n\n")
+                    contents.reverse()
+                else:
+                    contents = [contents]
+                self.text[category] = contents
 
     def get_text(self, category, exhaust=True):
         if exhaust:

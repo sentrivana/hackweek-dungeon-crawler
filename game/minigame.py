@@ -100,11 +100,8 @@ class Minigame:
 
     def _render_blurp(self):
         if self.blurp and self.blurp_show > 0:
-            font = pygame.font.SysFont("monaco", self.FONT_SIZE)
-            font_surface = font.render(self.blurp, False, self.blurp_color)
-
             self.surface.blit(
-                font_surface,
+                self.blurp_surface,
                 self.blurp_pos,
             )
             self.blurp_show -= 1
@@ -113,12 +110,19 @@ class Minigame:
         self.blurp = blurp
         self.blurp_show = 50
         if good:
-            self.blurp_color = "green"
+            self.blurp_color = (74, 91, 11)
         else:
             self.blurp_color = "red"
+
+        font = pygame.font.SysFont("monaco", self.FONT_SIZE)
+        self.blurp_surface = font.render(self.blurp, False, self.blurp_color)
         self.blurp_pos = (
-            random.randint(0, self.surface.get_width() - 100),
-            random.randint(0, self.surface.get_height() - 100),
+            random.randint(
+                0, self.surface.get_width() - self.blurp_surface.get_width()
+            ),
+            random.randint(
+                0, self.surface.get_height() - self.blurp_surface.get_height()
+            ),
         )
 
     def input(self):

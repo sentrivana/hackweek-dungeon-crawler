@@ -215,7 +215,7 @@ class FlashMinigame(Minigame):
 
     def reset(self):
         self.active_timer = 0
-        self.cooldown = random.randint(400, 600)
+        self.cooldown = random.randint(200, 500)
 
     def start(self):
         logger.debug("FlashMinigame difficulty is %d.", self.difficulty)

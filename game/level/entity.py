@@ -31,21 +31,23 @@ class Entity:
 
         logger.debug("Spawned %s at %d %d", self.type, row, col)
 
+    def __str__(self):
+        return f"{self.type} at {self.row} {self.col}"
+
     @property
     def pos(self):
         return (self.row, self.col)
 
     def render(self, screen, top_left, bob=False):
-        if self.mode == EntityMode.IDLE:
-            left = (self.col - top_left[1]) * TILE_SIZE_PIXELS + (
-                TILE_SIZE_PIXELS - ENTITY_SIZE_PIXELS
-            ) // 2
-            top = (self.row - top_left[0]) * TILE_SIZE_PIXELS + (
-                TILE_SIZE_PIXELS - ENTITY_SIZE_PIXELS
-            ) // 2
-            if self.can_bob and bob:
-                top -= 5
-            screen.blit(self.asset, (left, top))
+        left = (self.col - top_left[1]) * TILE_SIZE_PIXELS + (
+            TILE_SIZE_PIXELS - ENTITY_SIZE_PIXELS
+        ) // 2
+        top = (self.row - top_left[0]) * TILE_SIZE_PIXELS + (
+            TILE_SIZE_PIXELS - ENTITY_SIZE_PIXELS
+        ) // 2
+        if self.can_bob and bob:
+            top -= 5
+        screen.blit(self.asset, (left, top))
 
     def interact(self):
         logger.debug("Interacting with %s at %d %d", self.type, self.row, self.col)

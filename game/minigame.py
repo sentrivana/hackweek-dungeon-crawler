@@ -278,7 +278,7 @@ class ColorMinigame(Minigame):
     def update(self):
         super().update()
 
-        if self.ratio > 1.6:
+        if self.ratio > 1.75:
             self.reset_pending = True
             return
 

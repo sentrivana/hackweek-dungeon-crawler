@@ -26,10 +26,10 @@ class AssetManager:
             EntityType.KEY: [26],
             EntityType.DOOR: [27],
             EntityType.WIN: [28],
+            EntityType.COFFEE: [29],
         },
         "tiles": {
             TileType.GROUND: [0, 8, 13],
-            TileType.HAZARD: [22, 23],
             TileType.WALL: [3],
         },
     }
@@ -94,7 +94,7 @@ class TextManager:
                     contents.reverse()
                 else:
                     contents = [contents]
-                self.text[category] = contents
+                self.text[category] = [c.strip() for c in contents]
 
     def get_text(self, category, exhaust=True):
         if exhaust:

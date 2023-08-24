@@ -20,3 +20,4 @@ class CustomEvent(enum.Enum):
     ENTITY_BOB = pygame.USEREVENT + 13
     COLOR_MINIGAME_ADD_ITEM = pygame.USEREVENT + 14
     IFRAMES_DONE = pygame.USEREVENT + 15
+    COFFEE_PICKED_UP = pygame.USEREVENT + 16

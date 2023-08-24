@@ -14,8 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class Entity:
-    MAX_HEALTH = 3
-
     def __init__(self, level, row, col, type_):
         self.level = level
         self.row = row
@@ -54,6 +52,8 @@ class Entity:
 
 
 class Player(Entity):
+    MAX_HEALTH = 3
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -74,6 +74,9 @@ class Player(Entity):
 
         self.invulnerable = True
         pygame.time.set_timer(pygame.event.Event(CustomEvent.IFRAMES_DONE.value), 500)
+
+    def replenish_health(self):
+        self.health = self.MAX_HEALTH
 
 
 class Sign(Entity):
@@ -96,15 +99,14 @@ class Enemy(Entity):
         self.difficulty = None
         self.can_bob = True
 
-        self.health = self.MAX_HEALTH
-
     @property
     def boss(self):
         return self.difficulty >= 9
 
-    def set_properties(self, difficulty, minigame):
+    def set_properties(self, difficulty, health, minigame):
         self.difficulty = difficulty
         self.minigame = minigame(self)
+        self.health = health
 
     def interact(self):
         if self.mode == EntityMode.IDLE:
@@ -165,3 +167,12 @@ class Win(Entity):
 
     def interact(self):
         post_event(CustomEvent.LEVEL_CLEARED, text=TEXTS.get_text("level_cleared"))
+
+
+class Coffee(Entity):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.can_bob = True
+
+    def interact(self):
+        post_event(CustomEvent.COFFEE_PICKED_UP, entity=self)

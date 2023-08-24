@@ -116,6 +116,10 @@ def run():
                 elif event.type == CustomEvent.KEY_PICKED_UP.value:
                     level.remove_entity(event.entity)
 
+                elif event.type == CustomEvent.COFFEE_PICKED_UP.value:
+                    level.remove_entity(event.entity)
+                    level.player.replenish_health()
+
                 elif event.type == CustomEvent.DOOR_OPENED.value:
                     level.remove_entity(event.entity)
 

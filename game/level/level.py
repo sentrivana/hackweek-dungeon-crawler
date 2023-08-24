@@ -1,14 +1,11 @@
 import logging
 
-from game.assets import TEXTS
 from game.consts import TILE_COLS, TILE_ROWS
 from game.controls import Direction
-from game.events import CustomEvent
-from game.level.entity import Door, Enemy, Player, Tree, Key, Sign, Win
+from game.level.entity import Coffee, Door, Enemy, Player, Tree, Key, Sign, Win
 from game.level.tile import Tile
 from game.level.types import EntityType, ItemType, TileType
 from game.minigame import ColorMinigame, FlashMinigame, PrecisionMinigame
-from game.utils import post_event
 
 logger = logging.getLogger(__name__)
 
@@ -110,6 +107,17 @@ class Level:
     def _load_map(self, filename):
         self.enemy_count = 0
 
+        cls = {
+            EntityType.PLAYER: Player,
+            EntityType.ENEMY: Enemy,
+            EntityType.SIGN: Sign,
+            EntityType.KEY: Key,
+            EntityType.TREE: Tree,
+            EntityType.DOOR: Door,
+            EntityType.WIN: Win,
+            EntityType.COFFEE: Coffee,
+        }
+
         with open(filename) as map_file:
             for row, line in enumerate(map_file):
                 self.map.append([])
@@ -124,44 +132,32 @@ class Level:
 
                     try:
                         entity_type = EntityType(code)
-                        if entity_type == EntityType.PLAYER:
-                            self.player = Player(self, row, col, entity_type)
-                        elif entity_type == EntityType.ENEMY:
-                            self.enemy_count += 1
-                            self.max_enemies += 1
-                            self.entities[(row, col)] = Enemy(
-                                self, row, col, entity_type
-                            )
-                        elif entity_type == EntityType.SIGN:
-                            self.entities[(row, col)] = Sign(
-                                self, row, col, entity_type
-                            )
-                        elif entity_type == EntityType.KEY:
-                            self.entities[(row, col)] = Key(self, row, col, entity_type)
-                        elif entity_type == EntityType.TREE:
-                            self.entities[(row, col)] = Tree(
-                                self, row, col, entity_type
-                            )
-                        elif entity_type == EntityType.DOOR:
-                            self.entities[(row, col)] = Door(
-                                self, row, col, entity_type
-                            )
-                        elif entity_type == EntityType.WIN:
-                            self.entities[(row, col)] = Win(self, row, col, entity_type)
                     except ValueError:
-                        pass
+                        continue
+
+                    if entity_type == EntityType.PLAYER:
+                        self.player = Player(self, row, col, entity_type)
+                        continue
+
+                    elif entity_type == EntityType.ENEMY:
+                        self.enemy_count += 1
+                        self.max_enemies += 1
+
+                    self.entities[(row, col)] = cls[entity_type](
+                        self, row, col, entity_type
+                    )
 
     def _load_enemy_props(self, filename):
         enemies = []
         with open(filename) as enemies_file:
             for line in enemies_file:
-                difficulty, minigame = line.strip().split()
+                difficulty, health, minigame = line.strip().split()
                 minigame = {
                     "p": PrecisionMinigame,
                     "f": FlashMinigame,
                     "c": ColorMinigame,
                 }[minigame]
-                enemies.append((int(difficulty), minigame))
+                enemies.append((int(difficulty), int(health), minigame))
 
         i = 0
         for entity in self.entities.values():

@@ -4,10 +4,10 @@ from enum import Enum
 class TileType(Enum):
     GROUND = 0
     WALL = 1
-    HAZARD = 2
 
 
 class EntityType(Enum):
+    COFFEE = 2
     PLAYER = 3
     ENEMY = 4
     SIGN = 5

@@ -219,3 +219,28 @@ class FlashMinigame(Minigame):
 
     def start(self):
         logger.debug("FlashMinigame difficulty is %d.", self.difficulty)
+
+
+class BossMinigame(Minigame):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.reset()
+
+    @property
+    def description(self):
+        return "??? This is outside my paygrade"
+
+    def _render_minigame(self):
+        pass
+
+    def input(self):
+        if self.active_timer > 0:
+            post_event(CustomEvent.ENEMY_HIT, enemy=self.enemy)
+        else:
+            post_event(CustomEvent.DAMAGE_RECEIVED, enemy=self.enemy)
+
+    def reset(self):
+        pass
+
+    def start(self):
+        logger.debug("BossMinigame difficulty is %d.", self.difficulty)

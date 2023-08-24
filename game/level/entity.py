@@ -75,20 +75,24 @@ class Enemy(Entity):
 
         self.text = TEXTS.get_text("enemies")
         self.color = random.choice(["magenta", "green", "cyan", "violet"])
-        self.minigames = []
         self.minigame = None
         self.difficulty = None
-        self.health = self.MAX_HEALTH
         self.can_bob = True
 
     @property
     def boss(self):
         return self.difficulty >= 9
 
-    def set_properties(self, difficulty, minigames):
+    @property
+    def health(self):
+        if self.boss:
+            return self.MAX_HEALTH * 2
+        else:
+            return self.MAX_HEALTH
+
+    def set_properties(self, difficulty, minigame):
         self.difficulty = difficulty
-        self.minigames = minigames
-        self.minigame = self.minigames.pop()(self)
+        self.minigame = minigame(self)
 
     def interact(self):
         if self.mode == EntityMode.IDLE:
@@ -113,12 +117,7 @@ class Enemy(Entity):
     def damage_received(self):
         self.health -= 1
         if self.health <= 0:
-            if self.minigames:
-                self.health = 3
-                self.minigame = self.minigames.pop()
-            else:
-                post_event(CustomEvent.ENEMY_DEFEATED, enemy=self)
-            return
+            post_event(CustomEvent.ENEMY_DEFEATED, enemy=self)
 
         self.minigame.flashes = 3
         self.minigame.set_blurp(TEXTS.get_text("enemy_hit", exhaust=False), good=True)

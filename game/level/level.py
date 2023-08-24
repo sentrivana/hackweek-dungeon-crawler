@@ -7,7 +7,7 @@ from game.events import CustomEvent
 from game.level.entity import Door, Enemy, Player, Tree, Key, Sign, Win
 from game.level.tile import Tile
 from game.level.types import EntityType, ItemType, TileType
-from game.minigame import FlashMinigame, PrecisionMinigame
+from game.minigame import BossMinigame, FlashMinigame, PrecisionMinigame
 from game.utils import post_event
 
 logger = logging.getLogger(__name__)
@@ -157,15 +157,13 @@ class Level:
         enemies = []
         with open(filename) as enemies_file:
             for line in enemies_file:
-                difficulty, minigames = line.strip().split()
-                minigames = minigames.split(",")
-                minigame_map = {
+                difficulty, minigame = line.strip().split()
+                minigame = {
                     "p": PrecisionMinigame,
                     "f": FlashMinigame,
-                }
-                enemies.append(
-                    (int(difficulty), [minigame_map[abbr] for abbr in minigames])
-                )
+                    "x": BossMinigame,
+                }[minigame]
+                enemies.append((int(difficulty), minigame))
 
         i = 0
         for entity in self.entities.values():

@@ -1,9 +1,6 @@
 Another day,
 another bug squashing mission.
 
-All bugs need to be fixed
-by the end of today, they said.
-
 Never seen this codebase before.
 
 Hope there's at least some

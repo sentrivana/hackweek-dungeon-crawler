@@ -21,7 +21,7 @@ class AssetManager:
         "entities": {
             EntityType.PLAYER: [15],
             EntityType.SIGN: [17],
-            EntityType.ENEMY: [11, 12, 14, 18],
+            EntityType.ENEMY: [7, 9, 11, 12, 14, 16, 18, 20],
             EntityType.TREE: [1, 21],
             EntityType.KEY: [26],
             EntityType.DOOR: [27],

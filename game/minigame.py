@@ -33,7 +33,7 @@ class Minigame:
             self.PADDING,
             self.PADDING,
             self.surface_with_padding.get_width() - self.PADDING * 2,
-            self.surface_with_padding.get_height() - self.PADDING * 8,
+            self.surface_with_padding.get_height() - self.PADDING * 6,
         )
 
         logger.debug("Minigame for enemy %s at %d %d created", enemy.type, *enemy.pos)
@@ -256,7 +256,7 @@ class ColorMinigame(Minigame):
             return
 
         self.items.append(
-            item=(
+            (
                 self.surface,
                 self.color2,
                 (

@@ -41,14 +41,14 @@ class Level:
             return self.map[row][col]
         return Tile(row, col, TileType.WALL)
 
-    def render(self, screen):
+    def render(self, screen, bob):
         for row in range(self.top_left[0], self.top_left[0] + TILE_ROWS):
             for col in range(self.top_left[1], self.top_left[1] + TILE_COLS):
                 self.tile(row, col).render(screen, self.top_left)
 
         for (row, col), entity in self.entities.items():
             if self._tile_visible(row, col):
-                entity.render(screen, self.top_left)
+                entity.render(screen, self.top_left, bob)
 
         self.player.render(screen, self.top_left)
 

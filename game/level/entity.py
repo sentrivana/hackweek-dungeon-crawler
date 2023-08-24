@@ -27,23 +27,25 @@ class Entity:
         self.text = None
         self.color = None
 
+        self.can_bob = False
+
         logger.debug("Spawned %s at %d %d", self.type, row, col)
 
     @property
     def pos(self):
         return (self.row, self.col)
 
-    def render(self, screen, top_left):
+    def render(self, screen, top_left, bob=False):
         if self.mode == EntityMode.IDLE:
-            screen.blit(
-                self.asset,
-                (
-                    (self.col - top_left[1]) * TILE_SIZE_PIXELS
-                    + (TILE_SIZE_PIXELS - ENTITY_SIZE_PIXELS) // 2,
-                    (self.row - top_left[0]) * TILE_SIZE_PIXELS
-                    + (TILE_SIZE_PIXELS - ENTITY_SIZE_PIXELS) // 2,
-                ),
-            )
+            left = (self.col - top_left[1]) * TILE_SIZE_PIXELS + (
+                TILE_SIZE_PIXELS - ENTITY_SIZE_PIXELS
+            ) // 2
+            top = (self.row - top_left[0]) * TILE_SIZE_PIXELS + (
+                TILE_SIZE_PIXELS - ENTITY_SIZE_PIXELS
+            ) // 2
+            if self.can_bob and bob:
+                top -= 5
+            screen.blit(self.asset, (left, top))
 
     def interact(self):
         logger.debug("Interacting with %s at %d %d", self.type, self.row, self.col)
@@ -77,6 +79,7 @@ class Enemy(Entity):
         self.minigame = None
         self.difficulty = None
         self.health = self.MAX_HEALTH
+        self.can_bob = True
 
     @property
     def boss(self):
@@ -131,6 +134,10 @@ class Enemy(Entity):
 
 
 class Key(Entity):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.can_bob = True
+
     def interact(self):
         post_event(CustomEvent.KEY_PICKED_UP, entity=self)
 
@@ -146,5 +153,9 @@ class Tree(Entity):
 
 
 class Win(Entity):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.can_bob = True
+
     def interact(self):
         post_event(CustomEvent.LEVEL_CLEARED, text=TEXTS.get_text("level_cleared"))

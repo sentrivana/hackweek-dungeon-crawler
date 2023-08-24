@@ -17,3 +17,4 @@ class CustomEvent(enum.Enum):
     ENEMY_HIT = pygame.USEREVENT + 10
     KEY_PICKED_UP = pygame.USEREVENT + 11
     DOOR_OPENED = pygame.USEREVENT + 12
+    ENTITY_BOB = pygame.USEREVENT + 13

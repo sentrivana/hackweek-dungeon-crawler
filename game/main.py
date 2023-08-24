@@ -42,11 +42,13 @@ def run():
     level = Level("levels/001.map", "levels/001.ene")
     hud_overlay = HUDOverlay(level)
     hud_blink = False
+    bob = False
 
     pygame.time.set_timer(
         pygame.event.Event(CustomEvent.REGENERATE_TORCHLIGHT.value), 800
     )
     pygame.time.set_timer(pygame.event.Event(CustomEvent.HUD_BLINK.value), 500)
+    pygame.time.set_timer(pygame.event.Event(CustomEvent.ENTITY_BOB.value), 500)
 
     pygame.event.post(
         pygame.event.Event(CustomEvent.SHOW_TEXT.value, text=TEXTS.get_text("intro"))
@@ -82,6 +84,9 @@ def run():
 
             elif event.type == CustomEvent.HUD_BLINK.value:
                 hud_blink = not hud_blink
+
+            elif event.type == CustomEvent.ENTITY_BOB.value:
+                bob = not bob
 
             if state == State.RUNNING:
                 if event.type == pygame.KEYDOWN:
@@ -120,7 +125,7 @@ def run():
 
         screen.fill((0, 0, 0))
 
-        level.render(screen)
+        level.render(screen, bob=bob)
 
         torchlight_overlay.render(screen)
 

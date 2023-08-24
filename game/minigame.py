@@ -20,7 +20,7 @@ class Minigame:
 
     def __init__(self, enemy):
         self.enemy = enemy
-        self.difficulty = 0
+        self.difficulty = self.enemy.difficulty
 
         self.started = False
         self.jitters = 0
@@ -134,6 +134,13 @@ class Minigame:
 
 
 class PrecisionMinigame(Minigame):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    @property
+    def description(self):
+        return "Press a key when the line is over the purple!"
+
     def _render_minigame(self):
         pygame.draw.rect(
             self.surface,
@@ -165,20 +172,50 @@ class PrecisionMinigame(Minigame):
         self.pos = random.randint(0, self.surface_width)
 
     def start(self):
-        self.difficulty = (
-            self.enemy.level.max_enemies + 1 - self.enemy.level.enemy_count
-        )
         self.pos = 0
         self.surface_width = self.surface.get_width()
         self.target_width = max(
             math.ceil(self.surface_width // 2 // self.difficulty), 15
         )
         logger.debug(
-            "Minigame difficulty is %d. Surface: %d Target: %d",
+            "PrecisionMinigame difficulty is %d. Surface: %d Target: %d",
             self.difficulty,
             self.surface_width,
             self.target_width,
         )
 
 
-MINIGAMES = [PrecisionMinigame]
+class FlashMinigame(Minigame):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.reset()
+
+    @property
+    def description(self):
+        return "Press a key when there's a flash!"
+
+    def _render_minigame(self):
+        if self.active_timer > 0:
+            self.active_timer -= 1
+            self.surface.fill(self.color2)
+            if self.active_timer == 0:
+                self.cooldown = random.randint(50, 100)
+
+        elif self.cooldown > 0:
+            self.cooldown -= 1
+
+        elif self.cooldown == 0:
+            self.active_timer = 60 - self.difficulty * 2
+
+    def input(self):
+        if self.active_timer > 0:
+            post_event(CustomEvent.ENEMY_HIT, enemy=self.enemy)
+        else:
+            post_event(CustomEvent.DAMAGE_RECEIVED, enemy=self.enemy)
+
+    def reset(self):
+        self.active_timer = 0
+        self.cooldown = random.randint(400, 600)
+
+    def start(self):
+        logger.debug("FlashMinigame difficulty is %d.", self.difficulty)

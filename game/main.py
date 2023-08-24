@@ -39,7 +39,7 @@ def run():
     text_overlay = TextOverlay()
     minigame = None
 
-    level = Level("levels/001.map")
+    level = Level("levels/001.map", "levels/001.ene")
     hud_overlay = HUDOverlay(level)
     hud_blink = False
 
@@ -74,13 +74,11 @@ def run():
 
             elif event.type == CustomEvent.GAME_OVER.value:
                 state = State.GAME_OVER
-                text_overlay.set_text("GAME OVER\n\n" + event.text)
-                text_overlay.color = "red"
+                text_overlay.set_text("GAME OVER\n\n" + event.text, color="red")
 
             elif event.type == CustomEvent.LEVEL_CLEARED.value:
                 state = State.LEVEL_CLEARED
-                text_overlay.set_text("LEVEL CLEARED!\n\n" + event.text)
-                text_overlay.color = "green"
+                text_overlay.set_text("LEVEL CLEARED!\n\n" + event.text, color="green")
 
             elif event.type == CustomEvent.HUD_BLINK.value:
                 hud_blink = not hud_blink
@@ -95,7 +93,11 @@ def run():
 
                 elif event.type == CustomEvent.SHOW_TEXT.value:
                     state = State.OVERLAY
-                    text_overlay.set_text(event.text, getattr(event, "color", None))
+                    text_overlay.set_text(
+                        event.text,
+                        color=getattr(event, "color", None),
+                        small_text=getattr(event, "small_text", None),
+                    )
 
                 elif event.type == CustomEvent.KEY_PICKED_UP.value:
                     level.remove_entity(event.entity)

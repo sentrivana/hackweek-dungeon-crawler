@@ -5,7 +5,6 @@ from game.assets import ASSETS, TEXTS
 from game.consts import ENTITY_SIZE_PIXELS, TILE_SIZE_PIXELS
 from game.events import CustomEvent
 from game.level.types import EntityMode, ItemType
-from game.minigame import MINIGAMES
 from game.utils import post_event
 
 
@@ -27,7 +26,6 @@ class Entity:
 
         self.text = None
         self.color = None
-        self.minigame = None
 
         logger.debug("Spawned %s at %d %d", self.type, row, col)
 
@@ -49,24 +47,6 @@ class Entity:
 
     def interact(self):
         logger.debug("Interacting with %s at %d %d", self.type, self.row, self.col)
-
-    def damage_received(self):
-        self.health -= 1
-        if self.health <= 0:
-            post_event(CustomEvent.ENEMY_DEFEATED, enemy=self)
-            return
-
-        self.minigame.flashes = 3
-        self.minigame.set_blurp(TEXTS.get_text("enemy_hit", exhaust=False), good=True)
-        self.minigame.reset()
-
-    def player_hit(self):
-        if self.minigame is not None:
-            self.minigame.jitters = 3
-            self.minigame.set_blurp(
-                TEXTS.get_text("player_hit", exhaust=False), good=False
-            )
-            self.minigame.reset()
 
 
 class Player(Entity):
@@ -93,19 +73,61 @@ class Enemy(Entity):
 
         self.text = TEXTS.get_text("enemies")
         self.color = random.choice(["magenta", "green", "cyan", "violet"])
-        self.minigame = random.choice(MINIGAMES)(self)
+        self.minigames = []
+        self.minigame = None
+        self.difficulty = None
         self.health = self.MAX_HEALTH
+
+    @property
+    def boss(self):
+        return self.difficulty >= 9
+
+    def set_properties(self, difficulty, minigames):
+        self.difficulty = difficulty
+        self.minigames = minigames
+        self.minigame = self.minigames.pop()(self)
 
     def interact(self):
         if self.mode == EntityMode.IDLE:
             self.mode = EntityMode.FIGHT
 
-            post_event(CustomEvent.SHOW_TEXT, text=self.text, color=self.color)
+            small_text = None
+            if self.minigame:
+                small_text = self.minigame.description
+
+            post_event(
+                CustomEvent.SHOW_TEXT,
+                text=self.text,
+                small_text=small_text,
+                color=self.color,
+            )
             post_event(
                 CustomEvent.INITIALIZE_MINIGAME,
                 minigame=self.minigame,
                 enemy=self,
             )
+
+    def damage_received(self):
+        self.health -= 1
+        if self.health <= 0:
+            if self.minigames:
+                self.health = 3
+                self.minigame = self.minigames.pop()
+            else:
+                post_event(CustomEvent.ENEMY_DEFEATED, enemy=self)
+            return
+
+        self.minigame.flashes = 3
+        self.minigame.set_blurp(TEXTS.get_text("enemy_hit", exhaust=False), good=True)
+        self.minigame.reset()
+
+    def player_hit(self):
+        if self.minigame is not None:
+            self.minigame.jitters = 3
+            self.minigame.set_blurp(
+                TEXTS.get_text("player_hit", exhaust=False), good=False
+            )
+            self.minigame.reset()
 
 
 class Key(Entity):
@@ -121,3 +143,8 @@ class Door(Entity):
 
 class Tree(Entity):
     pass
+
+
+class Win(Entity):
+    def interact(self):
+        post_event(CustomEvent.LEVEL_CLEARED, text=TEXTS.get_text("level_cleared"))

@@ -4,16 +4,17 @@ from game.assets import TEXTS
 from game.consts import TILE_COLS, TILE_ROWS
 from game.controls import Direction
 from game.events import CustomEvent
-from game.level.entity import Door, Enemy, Player, Tree, Key, Sign
+from game.level.entity import Door, Enemy, Player, Tree, Key, Sign, Win
 from game.level.tile import Tile
 from game.level.types import EntityType, ItemType, TileType
+from game.minigame import FlashMinigame, PrecisionMinigame
 from game.utils import post_event
 
 logger = logging.getLogger(__name__)
 
 
 class Level:
-    def __init__(self, filename):
+    def __init__(self, filename, enemies_filename):
         self.map = []
         self.entities = {}
         self.player = None
@@ -21,6 +22,7 @@ class Level:
         self.max_enemies = 0
 
         self._load_map(filename)
+        self._load_enemy_props(enemies_filename)
 
     @property
     def width(self):
@@ -71,9 +73,6 @@ class Level:
         del self.entities[(row, col)]
 
         logger.debug("Entity at %d %d deleted", row, col)
-
-        if self.enemy_count <= 0:
-            post_event(CustomEvent.LEVEL_CLEARED, text=TEXTS.get_text("level_cleared"))
 
     def damage_received(self):
         self.player.health -= 1
@@ -149,5 +148,27 @@ class Level:
                             self.entities[(row, col)] = Door(
                                 self, row, col, entity_type
                             )
+                        elif entity_type == EntityType.WIN:
+                            self.entities[(row, col)] = Win(self, row, col, entity_type)
                     except ValueError:
                         pass
+
+    def _load_enemy_props(self, filename):
+        enemies = []
+        with open(filename) as enemies_file:
+            for line in enemies_file:
+                difficulty, minigames = line.strip().split()
+                minigames = minigames.split(",")
+                minigame_map = {
+                    "p": PrecisionMinigame,
+                    "f": FlashMinigame,
+                }
+                enemies.append(
+                    (int(difficulty), [minigame_map[abbr] for abbr in minigames])
+                )
+
+        i = 0
+        for entity in self.entities.values():
+            if entity.type == EntityType.ENEMY:
+                entity.set_properties(*enemies[i])
+                i += 1

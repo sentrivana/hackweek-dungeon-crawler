@@ -44,12 +44,14 @@ class TextOverlay:
     def width(self):
         return WINDOW_WIDTH - WINDOW_WIDTH // 2
 
-    def set_text(self, text, color=None):
+    def set_text(self, text, small_text=None, color=None):
         self.text = text
+        self.small_text = small_text
         self.color = color or "white"
 
     def dismiss(self):
         self.text = None
+        self.small_text = None
         self.color = "white"
 
     def render(self, screen):
@@ -64,6 +66,22 @@ class TextOverlay:
                     (
                         self.FONT_SIZE,
                         self.FONT_SIZE
+                        + (self.FONT_SIZE // 2) * len(font_surfaces)
+                        + self.FONT_SIZE * len(font_surfaces),
+                    ),
+                )
+            )
+
+        if self.small_text is not None:
+            small_font_size = self.FONT_SIZE - self.FONT_SIZE // 4
+            font = pygame.font.SysFont("monaco", small_font_size)
+            surface = font.render(self.small_text, False, "white")
+            font_surfaces.append(
+                (
+                    surface,
+                    (
+                        self.FONT_SIZE,
+                        self.FONT_SIZE * 2
                         + (self.FONT_SIZE // 2) * len(font_surfaces)
                         + self.FONT_SIZE * len(font_surfaces),
                     ),

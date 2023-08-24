@@ -14,6 +14,7 @@ class EntityType(Enum):
     TREE = 6
     KEY = 7
     DOOR = 8
+    WIN = 9
 
 
 class ItemType(Enum):

@@ -25,6 +25,7 @@ class AssetManager:
             EntityType.TREE: [1, 21],
             EntityType.KEY: [26],
             EntityType.DOOR: [27],
+            EntityType.WIN: [28],
         },
         "tiles": {
             TileType.GROUND: [0, 8, 13],

@@ -7,7 +7,7 @@ from game.events import CustomEvent
 from game.level.entity import Door, Enemy, Player, Tree, Key, Sign, Win
 from game.level.tile import Tile
 from game.level.types import EntityType, ItemType, TileType
-from game.minigame import BossMinigame, FlashMinigame, PrecisionMinigame
+from game.minigame import ColorMinigame, FlashMinigame, PrecisionMinigame
 from game.utils import post_event
 
 logger = logging.getLogger(__name__)
@@ -161,7 +161,7 @@ class Level:
                 minigame = {
                     "p": PrecisionMinigame,
                     "f": FlashMinigame,
-                    "x": BossMinigame,
+                    "c": ColorMinigame,
                 }[minigame]
                 enemies.append((int(difficulty), minigame))
 

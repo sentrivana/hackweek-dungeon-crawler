@@ -49,6 +49,9 @@ def run():
     )
     pygame.time.set_timer(pygame.event.Event(CustomEvent.HUD_BLINK.value), 500)
     pygame.time.set_timer(pygame.event.Event(CustomEvent.ENTITY_BOB.value), 500)
+    pygame.time.set_timer(
+        pygame.event.Event(CustomEvent.COLOR_MINIGAME_ADD_ITEM.value), 600
+    )
 
     pygame.event.post(
         pygame.event.Event(CustomEvent.SHOW_TEXT.value, text=TEXTS.get_text("intro"))
@@ -122,6 +125,8 @@ def run():
             elif state == State.MINIGAME:
                 if event.type == pygame.KEYDOWN:
                     minigame.input()
+                elif event.type == CustomEvent.COLOR_MINIGAME_ADD_ITEM.value:
+                    minigame.add_item()
 
         screen.fill((0, 0, 0))
 

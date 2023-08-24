@@ -132,6 +132,9 @@ class Minigame:
     def reset(self):
         raise NotImplementedError
 
+    def add_item(self):
+        pass
+
 
 class PrecisionMinigame(Minigame):
     def __init__(self, *args, **kwargs):
@@ -221,26 +224,59 @@ class FlashMinigame(Minigame):
         logger.debug("FlashMinigame difficulty is %d.", self.difficulty)
 
 
-class BossMinigame(Minigame):
+class ColorMinigame(Minigame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.reset()
 
     @property
     def description(self):
-        return "??? This is outside my paygrade"
+        return "Press a key when there's more purple than white!"
 
     def _render_minigame(self):
-        pass
+        for item in self.items:
+            pygame.draw.circle(*item)
 
     def input(self):
-        if self.active_timer > 0:
+        if self.ratio > 1:
             post_event(CustomEvent.ENEMY_HIT, enemy=self.enemy)
         else:
             post_event(CustomEvent.DAMAGE_RECEIVED, enemy=self.enemy)
 
     def reset(self):
-        pass
+        self.items = []
+        self.ratio = 0
 
     def start(self):
-        logger.debug("BossMinigame difficulty is %d.", self.difficulty)
+        logger.debug("ColorMinigame difficulty is %d.", self.difficulty)
+
+    def add_item(self):
+        if self.ratio > 1.5:
+            self.reset()
+            return
+
+        self.items.append(
+            item=(
+                self.surface,
+                self.color2,
+                (
+                    random.randint(0, self.surface.get_width()),
+                    random.randint(0, self.surface.get_height()),
+                ),
+                random.randint(25, self.surface.get_height() // 3),
+            )
+        )
+        self._render_minigame()
+        self.ratio = self._calculate_ratio()
+
+    def _calculate_ratio(self):
+        white = 0
+        purple = 0
+        for y in range(self.surface.get_height()):
+            for x in range(self.surface.get_width()):
+                if self.surface.get_at((x, y)) == self.color2:
+                    purple += 1
+                else:
+                    white += 1
+
+        return purple / white

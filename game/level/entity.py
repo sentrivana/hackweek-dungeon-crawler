@@ -79,16 +79,11 @@ class Enemy(Entity):
         self.difficulty = None
         self.can_bob = True
 
+        self.health = self.MAX_HEALTH
+
     @property
     def boss(self):
         return self.difficulty >= 9
-
-    @property
-    def health(self):
-        if self.boss:
-            return self.MAX_HEALTH * 2
-        else:
-            return self.MAX_HEALTH
 
     def set_properties(self, difficulty, minigame):
         self.difficulty = difficulty

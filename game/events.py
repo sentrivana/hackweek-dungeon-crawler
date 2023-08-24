@@ -18,3 +18,4 @@ class CustomEvent(enum.Enum):
     KEY_PICKED_UP = pygame.USEREVENT + 11
     DOOR_OPENED = pygame.USEREVENT + 12
     ENTITY_BOB = pygame.USEREVENT + 13
+    COLOR_MINIGAME_ADD_ITEM = pygame.USEREVENT + 14

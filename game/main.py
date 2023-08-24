@@ -37,7 +37,6 @@ def run():
     torchlight_overlay = TorchlightOverlay()
     text_overlay = TextOverlay()
     minigame = None
-    hud_blink = False
     bob = False
 
     level = Level("levels/001.map", "levels/001.ene")

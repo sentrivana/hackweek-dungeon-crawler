@@ -203,6 +203,7 @@ class FlashMinigame(Minigame):
             self.surface.fill(self.color2)
             if self.active_timer == 0:
                 self.cooldown = random.randint(50, 100)
+                post_event(CustomEvent.DAMAGE_RECEIVED, enemy=self.enemy)
 
         elif self.cooldown > 0:
             self.cooldown -= 1
@@ -252,6 +253,7 @@ class ColorMinigame(Minigame):
 
     def add_item(self):
         if self.ratio > 1.5:
+            post_event(CustomEvent.DAMAGE_RECEIVED, enemy=self.enemy)
             self.reset()
             return
 

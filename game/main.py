@@ -78,7 +78,6 @@ def run():
 
             elif event.type == CustomEvent.IFRAMES_DONE.value:
                 level.player.invulnerable = False
-                # this unsets the events
                 pygame.time.set_timer(
                     pygame.event.Event(CustomEvent.IFRAMES_DONE.value), 0
                 )

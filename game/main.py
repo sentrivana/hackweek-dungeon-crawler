@@ -46,7 +46,6 @@ def run():
     pygame.time.set_timer(
         pygame.event.Event(CustomEvent.REGENERATE_TORCHLIGHT.value), 800
     )
-    pygame.time.set_timer(pygame.event.Event(CustomEvent.HUD_BLINK.value), 500)
     pygame.time.set_timer(pygame.event.Event(CustomEvent.ENTITY_BOB.value), 500)
     pygame.time.set_timer(
         pygame.event.Event(CustomEvent.COLOR_MINIGAME_ADD_ITEM.value), 500
@@ -89,9 +88,6 @@ def run():
             elif event.type == CustomEvent.LEVEL_CLEARED.value:
                 state = State.LEVEL_CLEARED
                 text_overlay.set_text("LEVEL CLEARED!\n\n" + event.text, color="green")
-
-            elif event.type == CustomEvent.HUD_BLINK.value:
-                hud_blink = not hud_blink
 
             elif event.type == CustomEvent.ENTITY_BOB.value:
                 bob = not bob
@@ -151,7 +147,7 @@ def run():
         elif state == State.MINIGAME:
             minigame.render(screen)
 
-        if not hud_blink or not hud_overlay.should_blink:
+        if not bob or not hud_overlay.should_blink:
             hud_overlay.render(screen)
 
         pygame.display.flip()

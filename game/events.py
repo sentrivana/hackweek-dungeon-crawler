@@ -13,11 +13,10 @@ class CustomEvent(enum.Enum):
     START_MINIGAME = pygame.USEREVENT + 6
     DAMAGE_RECEIVED = pygame.USEREVENT + 7
     LEVEL_CLEARED = pygame.USEREVENT + 8
-    HUD_BLINK = pygame.USEREVENT + 9
+    COFFEE_PICKED_UP = pygame.USEREVENT + 9
     ENEMY_HIT = pygame.USEREVENT + 10
     KEY_PICKED_UP = pygame.USEREVENT + 11
     DOOR_OPENED = pygame.USEREVENT + 12
     ENTITY_BOB = pygame.USEREVENT + 13
     COLOR_MINIGAME_ADD_ITEM = pygame.USEREVENT + 14
     IFRAMES_DONE = pygame.USEREVENT + 15
-    COFFEE_PICKED_UP = pygame.USEREVENT + 16

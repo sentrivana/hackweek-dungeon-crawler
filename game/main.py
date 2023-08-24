@@ -50,7 +50,7 @@ def run():
     pygame.time.set_timer(pygame.event.Event(CustomEvent.HUD_BLINK.value), 500)
     pygame.time.set_timer(pygame.event.Event(CustomEvent.ENTITY_BOB.value), 500)
     pygame.time.set_timer(
-        pygame.event.Event(CustomEvent.COLOR_MINIGAME_ADD_ITEM.value), 600
+        pygame.event.Event(CustomEvent.COLOR_MINIGAME_ADD_ITEM.value), 500
     )
 
     pygame.event.post(
@@ -76,6 +76,13 @@ def run():
             elif event.type == CustomEvent.DAMAGE_RECEIVED.value:
                 level.damage_received()
                 event.enemy.player_hit()
+
+            elif event.type == CustomEvent.IFRAMES_DONE.value:
+                level.player.invulnerable = False
+                # this unsets the events
+                pygame.time.set_timer(
+                    pygame.event.Event(CustomEvent.IFRAMES_DONE.value), 0
+                )
 
             elif event.type == CustomEvent.GAME_OVER.value:
                 state = State.GAME_OVER
@@ -104,7 +111,6 @@ def run():
                     text_overlay.set_text(
                         event.text,
                         color=getattr(event, "color", None),
-                        small_text=getattr(event, "small_text", None),
                     )
 
                 elif event.type == CustomEvent.KEY_PICKED_UP.value:
@@ -127,6 +133,9 @@ def run():
                     minigame.input()
                 elif event.type == CustomEvent.COLOR_MINIGAME_ADD_ITEM.value:
                     minigame.add_item()
+
+        if state == State.MINIGAME:
+            minigame.update()
 
         screen.fill((0, 0, 0))
 

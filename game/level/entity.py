@@ -1,6 +1,8 @@
 import logging
 import random
 
+import pygame
+
 from game.assets import ASSETS, TEXTS
 from game.consts import ENTITY_SIZE_PIXELS, TILE_SIZE_PIXELS
 from game.events import CustomEvent
@@ -57,6 +59,21 @@ class Player(Entity):
 
         self.inventory = []
         self.health = self.MAX_HEALTH
+        self.invulnerable = False
+
+    def hit(self):
+        if self.invulnerable:
+            return
+
+        self.health -= 1
+        if self.health <= 0:
+            post_event(
+                CustomEvent.GAME_OVER, text=TEXTS.get_text("game_over", exhaust=False)
+            )
+            return
+
+        self.invulnerable = True
+        pygame.time.set_timer(pygame.event.Event(CustomEvent.IFRAMES_DONE.value), 500)
 
 
 class Sign(Entity):
@@ -93,14 +110,9 @@ class Enemy(Entity):
         if self.mode == EntityMode.IDLE:
             self.mode = EntityMode.FIGHT
 
-            small_text = None
-            if self.minigame:
-                small_text = self.minigame.description
-
             post_event(
                 CustomEvent.SHOW_TEXT,
                 text=self.text,
-                small_text=small_text,
                 color=self.color,
             )
             post_event(

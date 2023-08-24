@@ -75,11 +75,7 @@ class Level:
         logger.debug("Entity at %d %d deleted", row, col)
 
     def damage_received(self):
-        self.player.health -= 1
-        if self.player.health <= 0:
-            post_event(
-                CustomEvent.GAME_OVER, text=TEXTS.get_text("game_over", exhaust=False)
-            )
+        self.player.hit()
 
     def dist_to_player(self, tile):
         return max(abs(tile.row - self.player.row), abs(tile.col - self.player.col))

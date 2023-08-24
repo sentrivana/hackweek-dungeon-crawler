@@ -18,6 +18,10 @@ class Minigame:
     MAX_JITTER = 30
     FONT_SIZE = 12
 
+    DARKBLUE = (39, 39, 68)
+    PURPLE = (139, 109, 156)
+    BG = (242, 211, 171)
+
     def __init__(self, enemy):
         self.enemy = enemy
         self.difficulty = self.enemy.difficulty
@@ -31,9 +35,9 @@ class Minigame:
         self.surface_with_padding = pygame.surface.Surface((self.width, self.height))
         self.surface = self.surface_with_padding.subsurface(
             self.PADDING,
-            self.PADDING,
+            self.PADDING * 6,
             self.surface_with_padding.get_width() - self.PADDING * 2,
-            self.surface_with_padding.get_height() - self.PADDING * 6,
+            self.surface_with_padding.get_height() - self.PADDING * 12,
         )
 
         logger.debug("Minigame for enemy %s at %d %d created", enemy.type, *enemy.pos)
@@ -47,28 +51,25 @@ class Minigame:
         return WINDOW_HEIGHT // 4
 
     @property
-    def color1(self):
-        return (39, 39, 68)
-
-    @property
-    def color2(self):
-        return (139, 109, 156)
-
-    @property
-    def bg(self):
-        return (242, 211, 171)
+    def description(self):
+        return None
 
     def start(self):
         self.started = True
         logger.debug("Minigame started")
 
+    def update(self):
+        if self.flashes > 0:
+            self.flashes -= 1
+        if self.jitters > 0:
+            self.jitters -= 1
+
     def render(self, screen):
         self.surface_with_padding.fill("white")
         if self.flashes > 0:
             self.surface.fill("white")
-            self.flashes -= 1
         else:
-            self.surface.fill(self.bg)
+            self.surface.fill(self.BG)
 
         self._render_minigame()
         self._render_enemy_health()
@@ -79,7 +80,17 @@ class Minigame:
         if self.jitters > 0:
             top += random.randint(-self.MAX_JITTER, self.MAX_JITTER)
             left += random.randint(-self.MAX_JITTER, self.MAX_JITTER)
-            self.jitters -= 1
+
+        if self.description:
+            font = pygame.font.SysFont("monaco", self.FONT_SIZE)
+            font_surface = font.render(self.description, False, "black")
+            self.surface_with_padding.blit(
+                font_surface,
+                (
+                    self.FONT_SIZE,
+                    self.FONT_SIZE,
+                ),
+            )
 
         screen.blit(self.surface_with_padding, (left, top))
 
@@ -142,12 +153,17 @@ class PrecisionMinigame(Minigame):
 
     @property
     def description(self):
-        return "Press a key when the line is over the purple!"
+        return "Press when over purple!"
+
+    def update(self):
+        super().update()
+
+        self.pos = (self.pos + min(self.difficulty, 4)) % self.surface_width
 
     def _render_minigame(self):
         pygame.draw.rect(
             self.surface,
-            self.color2,
+            self.PURPLE,
             (
                 (self.surface_width - self.target_width) // 2,
                 0,
@@ -156,10 +172,8 @@ class PrecisionMinigame(Minigame):
             ),
         )
         pygame.draw.rect(
-            self.surface, self.color1, (self.pos, 0, 2, self.surface.get_height())
+            self.surface, self.DARKBLUE, (self.pos, 0, 2, self.surface.get_height())
         )
-
-        self.pos = (self.pos + min(self.difficulty, 4)) % self.surface_width
 
     def input(self):
         if (
@@ -195,12 +209,13 @@ class FlashMinigame(Minigame):
 
     @property
     def description(self):
-        return "Press a key when there's a flash!"
+        return "Press when purple!"
 
-    def _render_minigame(self):
+    def update(self):
+        super().update()
+
         if self.active_timer > 0:
             self.active_timer -= 1
-            self.surface.fill(self.color2)
             if self.active_timer == 0:
                 self.cooldown = random.randint(50, 100)
                 post_event(CustomEvent.DAMAGE_RECEIVED, enemy=self.enemy)
@@ -210,6 +225,10 @@ class FlashMinigame(Minigame):
 
         elif self.cooldown == 0:
             self.active_timer = 60 - self.difficulty * 2
+
+    def _render_minigame(self):
+        if self.active_timer > 0:
+            self.surface.fill(self.PURPLE)
 
     def input(self):
         if self.active_timer > 0:
@@ -232,7 +251,7 @@ class ColorMinigame(Minigame):
 
     @property
     def description(self):
-        return "Press a key when there's more purple than white!"
+        return "More purple than yellow?"
 
     def _render_minigame(self):
         for item in self.items:
@@ -247,20 +266,27 @@ class ColorMinigame(Minigame):
     def reset(self):
         self.items = []
         self.ratio = 0
+        self.reset_pending = False
 
     def start(self):
         logger.debug("ColorMinigame difficulty is %d.", self.difficulty)
 
+    def update(self):
+        super().update()
+
+        if self.ratio > 1.6:
+            self.reset_pending = True
+            return
+
     def add_item(self):
-        if self.ratio > 1.5:
+        if self.reset_pending:
             post_event(CustomEvent.DAMAGE_RECEIVED, enemy=self.enemy)
             self.reset()
-            return
 
         self.items.append(
             (
                 self.surface,
-                self.color2,
+                self.PURPLE,
                 (
                     random.randint(0, self.surface.get_width()),
                     random.randint(0, self.surface.get_height()),
@@ -276,7 +302,7 @@ class ColorMinigame(Minigame):
         purple = 0
         for y in range(self.surface.get_height()):
             for x in range(self.surface.get_width()):
-                if self.surface.get_at((x, y)) == self.color2:
+                if self.surface.get_at((x, y)) == self.PURPLE:
                     purple += 1
                 else:
                     white += 1

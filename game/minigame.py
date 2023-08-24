@@ -35,9 +35,9 @@ class Minigame:
         self.surface_with_padding = pygame.surface.Surface((self.width, self.height))
         self.surface = self.surface_with_padding.subsurface(
             self.PADDING,
-            self.PADDING * 6,
+            self.PADDING * 5,
             self.surface_with_padding.get_width() - self.PADDING * 2,
-            self.surface_with_padding.get_height() - self.PADDING * 12,
+            self.surface_with_padding.get_height() - self.PADDING * 10,
         )
 
         logger.debug("Minigame for enemy %s at %d %d created", enemy.type, *enemy.pos)
@@ -72,6 +72,7 @@ class Minigame:
             self.surface.fill(self.BG)
 
         self._render_minigame()
+        self._render_description()
         self._render_enemy_health()
         self._render_blurp()
 
@@ -81,21 +82,22 @@ class Minigame:
             top += random.randint(-self.MAX_JITTER, self.MAX_JITTER)
             left += random.randint(-self.MAX_JITTER, self.MAX_JITTER)
 
+        screen.blit(self.surface_with_padding, (left, top))
+
+    def _render_minigame(self):
+        raise NotImplementedError
+
+    def _render_description(self):
         if self.description:
             font = pygame.font.SysFont("monaco", self.FONT_SIZE)
             font_surface = font.render(self.description, False, "black")
             self.surface_with_padding.blit(
                 font_surface,
                 (
-                    self.FONT_SIZE,
-                    self.FONT_SIZE,
+                    self.PADDING,
+                    self.PADDING,
                 ),
             )
-
-        screen.blit(self.surface_with_padding, (left, top))
-
-    def _render_minigame(self):
-        raise NotImplementedError
 
     def _render_enemy_health(self):
         font = pygame.font.SysFont("monaco", self.FONT_SIZE)
@@ -105,7 +107,9 @@ class Minigame:
             font_surface,
             (
                 self.PADDING,
-                self.surface_with_padding.get_height() - self.FONT_SIZE - self.PADDING,
+                self.surface_with_padding.get_height()
+                - self.FONT_SIZE
+                - self.PADDING * 2,
             ),
         )
 

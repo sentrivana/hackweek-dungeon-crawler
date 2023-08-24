@@ -37,11 +37,11 @@ def run():
     torchlight_overlay = TorchlightOverlay()
     text_overlay = TextOverlay()
     minigame = None
-    hud_overlay = HUDOverlay(level)
     hud_blink = False
     bob = False
 
     level = Level("levels/001.map", "levels/001.ene")
+    hud_overlay = HUDOverlay(level)
 
     pygame.time.set_timer(
         pygame.event.Event(CustomEvent.REGENERATE_TORCHLIGHT.value), 800

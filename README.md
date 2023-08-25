@@ -19,4 +19,4 @@ $ python3 run.py
 
 - Assets: https://thedigitaldauber.itch.io/pocket-fables-fantasy-adventure-pack
 - Font: https://managore.itch.io/m5x7
-- Music: https://pixabay.com/music/main-title-battle-of-the-dragons-8037/
+- Music: https://pixabay.com/music/modern-classical-the-introvert-michael-kobrin-10959/

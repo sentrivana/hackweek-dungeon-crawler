@@ -1,10 +1,10 @@
 import logging
 import math
-
 import random
 
 import pygame
 
+from game.assets import TEXTS
 from game.consts import WINDOW_HEIGHT, WINDOW_WIDTH
 from game.events import CustomEvent
 from game.utils import post_event
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class Minigame:
     PADDING = 5
     MAX_JITTER = 30
-    FONT_SIZE = 12
+    FONT_SIZE = 16
 
     DARKBLUE = (39, 39, 68)
     PURPLE = (139, 109, 156)
@@ -89,7 +89,7 @@ class Minigame:
 
     def _render_description(self):
         if self.description:
-            font = pygame.font.SysFont("monaco", self.FONT_SIZE)
+            font = TEXTS.get_font(self.FONT_SIZE)
             font_surface = font.render(self.description, False, "black")
             self.surface_with_padding.blit(
                 font_surface,
@@ -100,16 +100,14 @@ class Minigame:
             )
 
     def _render_enemy_health(self):
-        font = pygame.font.SysFont("monaco", self.FONT_SIZE)
+        font = TEXTS.get_font(self.FONT_SIZE)
         font_surface = font.render(f"Bug health: {self.enemy.health}", False, "black")
 
         self.surface_with_padding.blit(
             font_surface,
             (
                 self.PADDING,
-                self.surface_with_padding.get_height()
-                - self.FONT_SIZE
-                - self.PADDING * 2,
+                self.surface_with_padding.get_height() - self.FONT_SIZE - self.PADDING,
             ),
         )
 
@@ -129,8 +127,7 @@ class Minigame:
         else:
             self.blurp_color = "red"
 
-        font = pygame.font.SysFont("monaco", self.FONT_SIZE)
-        font.set_bold(True)
+        font = TEXTS.get_font(self.FONT_SIZE)
         self.blurp_surface = font.render(self.blurp, False, self.blurp_color)
         self.blurp_pos = (
             random.randint(

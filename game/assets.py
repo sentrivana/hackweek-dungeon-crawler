@@ -66,6 +66,8 @@ class AssetManager:
 
 
 class TextManager:
+    FONT_FILENAME = "assets/m5x7.ttf"
+
     FILENAMES = {
         "intro": "text/intro.txt",
         "enemies": "text/enemies.txt",
@@ -95,6 +97,9 @@ class TextManager:
                 else:
                     contents = [contents]
                 self.text[category] = [c.strip() for c in contents]
+
+    def get_font(self, size):
+        return pygame.font.Font(self.FONT_FILENAME, size)
 
     def get_text(self, category, exhaust=True):
         if exhaust:

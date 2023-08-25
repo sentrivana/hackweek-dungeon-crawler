@@ -18,3 +18,4 @@ $ python3 run.py
 ## Acknowledgements
 
 Assets from https://thedigitaldauber.itch.io/pocket-fables-fantasy-adventure-pack
+Font from https://managore.itch.io/m5x7

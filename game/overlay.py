@@ -2,6 +2,7 @@ import random
 
 import pygame
 
+from game.assets import TEXTS
 from game.consts import (
     TILE_COLS,
     TILE_ROWS,
@@ -12,7 +13,8 @@ from game.consts import (
 
 
 class HUDOverlay:
-    FONT_SIZE = 24
+    FONT_SIZE = 32
+    PADDING = 16
 
     def __init__(self, level):
         self.level = level
@@ -22,7 +24,7 @@ class HUDOverlay:
         return self.level.player.health <= 1
 
     def render(self, screen):
-        font = pygame.font.SysFont("monaco", self.FONT_SIZE)
+        font = TEXTS.get_font(self.FONT_SIZE)
         if self.level.player.health > 1:
             color = (242, 211, 171)
         else:
@@ -31,11 +33,11 @@ class HUDOverlay:
             f"Energy left: {self.level.player.health}", False, color
         )
 
-        screen.blit(font_surface, (10, 10))
+        screen.blit(font_surface, (self.PADDING, self.PADDING))
 
 
 class TextOverlay:
-    FONT_SIZE = 14
+    FONT_SIZE = 32
 
     def __init__(self, color=None):
         self.color = color or "white"
@@ -53,7 +55,7 @@ class TextOverlay:
         self.color = "white"
 
     def render(self, screen):
-        font = pygame.font.SysFont("monaco", self.FONT_SIZE)
+        font = TEXTS.get_font(self.FONT_SIZE)
 
         font_surfaces = []
         for line in self.text.split("\n"):
@@ -63,9 +65,7 @@ class TextOverlay:
                     surface,
                     (
                         self.FONT_SIZE,
-                        self.FONT_SIZE
-                        + (self.FONT_SIZE // 2) * len(font_surfaces)
-                        + self.FONT_SIZE * len(font_surfaces),
+                        self.FONT_SIZE + self.FONT_SIZE * len(font_surfaces),
                     ),
                 )
             )

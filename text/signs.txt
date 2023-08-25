@@ -1,15 +1,16 @@
-# not sure what this does but it seems
-# to do the job most of the time
+# XXX: there's an obvious issue
+# with this entry point but
+# haven't had time to fix it
 
-# home-grown crypto implementation!
+# home-grown crypto!
 # super proud of this ngl
 
 # XXX temp, rewrite
 
-# I don't know what this structure does
-# and at this point I'm too afraid to
-# ask
+# I don't know what this
+# structure does
+# and at this point I'm
+# too afraid to ask
 
-# no one I've asked knows what this
-# code path does, but we shouldn't
-# remove it, just in case
+# this seems inefficient.
+# does it even do anything?

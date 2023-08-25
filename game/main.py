@@ -47,7 +47,7 @@ def run():
     )
     pygame.time.set_timer(pygame.event.Event(CustomEvent.ENTITY_BOB.value), 500)
     pygame.time.set_timer(
-        pygame.event.Event(CustomEvent.COLOR_MINIGAME_ADD_ITEM.value), 500
+        pygame.event.Event(CustomEvent.COLOR_MINIGAME_ADD_ITEM.value), 750
     )
 
     pygame.event.post(

@@ -4,7 +4,7 @@ import sys
 
 import pygame
 
-from game.assets import TEXTS
+from game.assets import SOUNDS, TEXTS
 from game.consts import GAME_TITLE, WINDOW_HEIGHT, WINDOW_WIDTH
 from game.controls import MOVEMENT_CONTROLS
 from game.events import CustomEvent
@@ -36,6 +36,7 @@ def run():
     state = State.RUNNING
     torchlight_overlay = TorchlightOverlay()
     text_overlay = TextOverlay()
+    music = SOUNDS.play()
     minigame = None
     bob = False
 

@@ -108,5 +108,17 @@ class TextManager:
             return random.choice(self.text[category])
 
 
+class SoundManager:
+    MUSIC_FILENAME = "assets/the-introvert-michael-kobrin-10959.mp3"
+
+    def __init__(self):
+        pygame.mixer.init()
+        self.music = pygame.mixer.music.load(self.MUSIC_FILENAME)
+
+    def play(self):
+        pygame.mixer.music.play(loops=-1)
+
+
 ASSETS = AssetManager()
 TEXTS = TextManager()
+SOUNDS = SoundManager()

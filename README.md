@@ -17,5 +17,6 @@ $ python3 run.py
 
 ## Acknowledgements
 
-- assets from https://thedigitaldauber.itch.io/pocket-fables-fantasy-adventure-pack
-- font from https://managore.itch.io/m5x7
+- Assets: https://thedigitaldauber.itch.io/pocket-fables-fantasy-adventure-pack
+- Font: https://managore.itch.io/m5x7
+- Music: https://pixabay.com/music/main-title-battle-of-the-dragons-8037/

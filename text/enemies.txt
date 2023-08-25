@@ -22,7 +22,7 @@ There's at least 3 people
 explicitly depending on me
 by now!"
 
-"Oh. You found me.
+"Oh. You've found me.
 It's not what you think --
 I make the program fun!
 Will it crash or not?

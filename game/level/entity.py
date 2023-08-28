@@ -131,13 +131,13 @@ class Enemy(Entity):
             post_event(CustomEvent.ENEMY_DEFEATED, enemy=self)
 
         self.minigame.flashes = 3
-        self.minigame.set_blurp(TEXTS.get_text("enemy_hit", exhaust=False), good=True)
+        self.minigame.set_blurb(TEXTS.get_text("enemy_hit", exhaust=False), good=True)
         self.minigame.reset()
 
     def player_hit(self):
         if self.minigame is not None:
             self.minigame.jitters = 3
-            self.minigame.set_blurp(
+            self.minigame.set_blurb(
                 TEXTS.get_text("player_hit", exhaust=False), good=False
             )
             self.minigame.reset()

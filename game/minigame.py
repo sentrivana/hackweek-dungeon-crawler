@@ -29,8 +29,8 @@ class Minigame:
         self.started = False
         self.jitters = 0
         self.flashes = 0
-        self.blurp = None
-        self.blurp_show = 0
+        self.blurb = None
+        self.blurb_show = 0
 
         self.surface_with_padding = pygame.surface.Surface((self.width, self.height))
         self.surface = self.surface_with_padding.subsurface(
@@ -74,7 +74,7 @@ class Minigame:
         self._render_minigame()
         self._render_description()
         self._render_enemy_health()
-        self._render_blurp()
+        self._render_blurb()
 
         left = (WINDOW_WIDTH - self.width) // 2
         top = (WINDOW_HEIGHT - self.height) // 2
@@ -111,30 +111,30 @@ class Minigame:
             ),
         )
 
-    def _render_blurp(self):
-        if self.blurp and self.blurp_show > 0:
+    def _render_blurb(self):
+        if self.blurb and self.blurb_show > 0:
             self.surface.blit(
-                self.blurp_surface,
-                self.blurp_pos,
+                self.blurb_surface,
+                self.blurb_pos,
             )
-            self.blurp_show -= 1
+            self.blurb_show -= 1
 
-    def set_blurp(self, blurp, good):
-        self.blurp = blurp
-        self.blurp_show = 50
+    def set_blurb(self, blurb, good):
+        self.blurb = blurb
+        self.blurb_show = 50
         if good:
-            self.blurp_color = (74, 91, 11)
+            self.blurb_color = (74, 91, 11)
         else:
-            self.blurp_color = "red"
+            self.blurb_color = "red"
 
         font = TEXTS.get_font(self.FONT_SIZE)
-        self.blurp_surface = font.render(self.blurp, False, self.blurp_color)
-        self.blurp_pos = (
+        self.blurb_surface = font.render(self.blurb, False, self.blurb_color)
+        self.blurb_pos = (
             random.randint(
-                0, self.surface.get_width() - self.blurp_surface.get_width()
+                0, self.surface.get_width() - self.blurb_surface.get_width()
             ),
             random.randint(
-                0, self.surface.get_height() - self.blurp_surface.get_height()
+                0, self.surface.get_height() - self.blurb_surface.get_height()
             ),
         )
 
